@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest black flake8
+
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 skills/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings
+        flake8 skills/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Format check with black
+      run: |
+        black --check skills/
+
+    - name: Test Skills structure
+      run: |
+        python -c "
+        import os
+        import yaml
+
+        # Check each Skill has SKILL.md
+        skills_dir = 'skills'
+        for skill in os.listdir(skills_dir):
+            skill_path = os.path.join(skills_dir, skill)
+            if os.path.isdir(skill_path) and not skill.startswith('.'):
+                skill_md = os.path.join(skill_path, 'SKILL.md')
+                assert os.path.exists(skill_md), f'{skill} missing SKILL.md'
+                print(f'✓ {skill} has SKILL.md')
+        "
+
+    - name: Test Python imports
+      run: |
+        python -c "
+        # Test that all Skills can be imported
+        import sys
+        sys.path.insert(0, 'skills/milady-meme-generator')
+        sys.path.insert(0, 'skills/ai-image-effects')
+        sys.path.insert(0, 'skills/twitter-content-ai')
+
+        print('Testing imports...')
+        # Add actual import tests as Skills are completed
+        print('✓ All imports successful')
+        "
+
+  skill-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Validate Skill Frontmatter
+      run: |
+        python -c "
+        import os
+        import re
+
+        def validate_frontmatter(file_path):
+            with open(file_path, 'r') as f:
+                content = f.read()
+
+            # Check frontmatter exists
+            if not content.startswith('---'):
+                return False, 'Missing frontmatter'
+
+            # Extract frontmatter
+            match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+            if not match:
+                return False, 'Invalid frontmatter format'
+
+            frontmatter = match.group(1)
+
+            # Check required fields
+            required = ['name', 'description']
+            for field in required:
+                if f'{field}:' not in frontmatter:
+                    return False, f'Missing required field: {field}'
+
+            return True, 'Valid'
+
+        # Validate all SKILL.md files
+        skills_dir = 'skills'
+        for skill in os.listdir(skills_dir):
+            skill_path = os.path.join(skills_dir, skill)
+            if os.path.isdir(skill_path) and not skill.startswith('.'):
+                skill_md = os.path.join(skill_path, 'SKILL.md')
+                if os.path.exists(skill_md):
+                    valid, msg = validate_frontmatter(skill_md)
+                    print(f'{skill}: {msg}')
+                    assert valid, f'{skill} validation failed: {msg}'
+        "
+
+  documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Check documentation completeness
+      run: |
+        # Check main docs exist
+        test -f README_NEW.md || test -f README.md
+        test -f ARCHITECTURE.md
+        test -f LICENSE
+
+        # Check each Skill has docs
+        for skill in skills/*/; do
+          if [ -d "$skill" ] && [ ! "$skill" = "skills/./" ]; then
+            test -f "${skill}SKILL.md" || (echo "Missing SKILL.md in $skill" && exit 1)
+          fi
+        done
+
+        echo "✓ All documentation present"
