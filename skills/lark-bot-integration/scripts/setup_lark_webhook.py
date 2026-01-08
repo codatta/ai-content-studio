@@ -16,7 +16,7 @@ def main():
     print()
 
     # 检查 .env 文件
-    env_file = Path(__file__).parent / 'config' / '.env'
+    env_file = Path(__file__).parent / "config" / ".env"
 
     if not env_file.exists():
         print(f"❌ 未找到配置文件: {env_file}")
@@ -29,10 +29,12 @@ def main():
     # 读取现有配置
     existing_webhook = None
     if env_file.exists():
-        with open(env_file, 'r', encoding='utf-8') as f:
+        with open(env_file, "r", encoding="utf-8") as f:
             for line in f:
-                if line.startswith('LARK_WEBHOOK_URL='):
-                    existing_webhook = line.split('=', 1)[1].strip().strip('"').strip("'")
+                if line.startswith("LARK_WEBHOOK_URL="):
+                    existing_webhook = (
+                        line.split("=", 1)[1].strip().strip('"').strip("'")
+                    )
                     break
 
     # 显示说明
@@ -52,7 +54,7 @@ def main():
         print(f"   {existing_webhook[:50]}...")
         print()
         update = input("是否更新？(y/n) [n]: ").strip().lower()
-        if update != 'y':
+        if update != "y":
             print("\n✅ 保持现有配置")
             test_webhook(existing_webhook)
             return
@@ -68,11 +70,11 @@ def main():
         print("\n❌ Webhook URL 不能为空")
         sys.exit(1)
 
-    if not webhook_url.startswith('https://open.feishu.cn/open-apis/bot/'):
+    if not webhook_url.startswith("https://open.feishu.cn/open-apis/bot/"):
         print("\n⚠️  警告: URL 格式可能不正确")
         print(f"   您输入的: {webhook_url}")
         proceed = input("   继续？(y/n) [n]: ").strip().lower()
-        if proceed != 'y':
+        if proceed != "y":
             print("\n❌ 已取消")
             sys.exit(1)
 
@@ -85,13 +87,13 @@ def main():
     webhook_found = False
 
     if env_file.exists():
-        with open(env_file, 'r', encoding='utf-8') as f:
+        with open(env_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
     # 更新或添加 LARK_WEBHOOK_URL
     new_lines = []
     for line in lines:
-        if line.startswith('LARK_WEBHOOK_URL='):
+        if line.startswith("LARK_WEBHOOK_URL="):
             new_lines.append(f'LARK_WEBHOOK_URL="{webhook_url}"\n')
             webhook_found = True
         else:
@@ -99,12 +101,12 @@ def main():
 
     # 如果没找到，添加到末尾
     if not webhook_found:
-        if new_lines and not new_lines[-1].endswith('\n'):
-            new_lines.append('\n')
+        if new_lines and not new_lines[-1].endswith("\n"):
+            new_lines.append("\n")
         new_lines.append(f'LARK_WEBHOOK_URL="{webhook_url}"\n')
 
     # 写入文件
-    with open(env_file, 'w', encoding='utf-8') as f:
+    with open(env_file, "w", encoding="utf-8") as f:
         f.writelines(new_lines)
 
     print(f"✅ 配置已保存到: {env_file}")
@@ -131,30 +133,28 @@ def test_webhook(webhook_url):
                 "header": {
                     "title": {
                         "tag": "plain_text",
-                        "content": "✅ AI Content Studio 配置成功"
+                        "content": "✅ AI Content Studio 配置成功",
                     },
-                    "template": "green"
+                    "template": "green",
                 },
                 "elements": [
                     {
                         "tag": "div",
                         "text": {
                             "tag": "lark_md",
-                            "content": "**飞书通知已成功配置！**\n\n从现在起，当内容新鲜度过低时，你会在这个群收到提醒。"
-                        }
+                            "content": "**飞书通知已成功配置！**\n\n从现在起，当内容新鲜度过低时，你会在这个群收到提醒。",
+                        },
                     },
-                    {
-                        "tag": "hr"
-                    },
+                    {"tag": "hr"},
                     {
                         "tag": "div",
                         "text": {
                             "tag": "lark_md",
-                            "content": "🔔 **提醒触发条件**:\n- 新鲜度 < 0.6\n- 完全重复率 > 10%\n- 短语重复率 > 40%\n- 距上次训练 > 30 天"
-                        }
-                    }
-                ]
-            }
+                            "content": "🔔 **提醒触发条件**:\n- 新鲜度 < 0.6\n- 完全重复率 > 10%\n- 短语重复率 > 40%\n- 距上次训练 > 30 天",
+                        },
+                    },
+                ],
+            },
         }
 
         print("📤 正在发送测试消息...")
@@ -162,7 +162,7 @@ def test_webhook(webhook_url):
         response.raise_for_status()
 
         result = response.json()
-        if result.get('code') == 0:
+        if result.get("code") == 0:
             print("✅ 测试成功！请检查飞书群是否收到消息")
         else:
             print(f"⚠️  响应: {result}")
@@ -199,7 +199,7 @@ def test_webhook(webhook_url):
     print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
@@ -208,5 +208,6 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\n\n❌ 错误: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

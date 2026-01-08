@@ -5,6 +5,7 @@ GM ASCII Art 模板库
 
 import random
 
+
 class GMAsciiArt:
     """GM ASCII 艺术库"""
 
@@ -21,9 +22,8 @@ class GMAsciiArt:
 ╚██████╔╝██║ ╚═╝ ██║
  ╚═════╝ ╚═╝     ╚═╝
 """,
-            "vibe": "bold, technical"
+            "vibe": "bold, technical",
         },
-
         # Template 2: 咖啡 + GM
         {
             "name": "coffee_gm",
@@ -35,9 +35,8 @@ class GMAsciiArt:
   │ ☕  │
   └─────┘
 """,
-            "vibe": "cozy, morning"
+            "vibe": "cozy, morning",
         },
-
         # Template 3: 扫把 Jessie
         {
             "name": "broom_gm",
@@ -50,9 +49,8 @@ class GMAsciiArt:
    the data
    janitor
 """,
-            "vibe": "jessie signature"
+            "vibe": "jessie signature",
         },
-
         # Template 4: 极简点阵 GM
         {
             "name": "dot_matrix_gm",
@@ -62,9 +60,8 @@ class GMAsciiArt:
 ⣿⣿⣿⣿ GM ⣿⣿⣿⣿⣿⣿
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
 """,
-            "vibe": "minimal, technical"
+            "vibe": "minimal, technical",
         },
-
         # Template 5: 笔记本电脑
         {
             "name": "laptop_gm",
@@ -79,9 +76,8 @@ class GMAsciiArt:
     _[_______]_
 ___[___________]___
 """,
-            "vibe": "work from home"
+            "vibe": "work from home",
         },
-
         # Template 6: 数据流 GM
         {
             "name": "data_stream_gm",
@@ -93,9 +89,8 @@ ___[___________]___
     ╚═══╝
 01001000 01101101
 """,
-            "vibe": "technical, data nerd"
+            "vibe": "technical, data nerd",
         },
-
         # Template 7: 蝴蝶结 Milady 风格
         {
             "name": "bow_gm",
@@ -108,9 +103,8 @@ ___[___________]___
   milady
   morning
 """,
-            "vibe": "milady aesthetic"
+            "vibe": "milady aesthetic",
         },
-
         # Template 8: 极简框框
         {
             "name": "box_gm",
@@ -121,9 +115,8 @@ ___[___________]___
 │             │
 └─────────────┘
 """,
-            "vibe": "clean, simple"
+            "vibe": "clean, simple",
         },
-
         # Template 9: 星星包围
         {
             "name": "stars_gm",
@@ -133,9 +126,8 @@ ___[___________]___
     ✨        ✨
   from the void
 """,
-            "vibe": "dreamy, cosmic"
+            "vibe": "dreamy, cosmic",
         },
-
         # Template 10: 疲惫版
         {
             "name": "tired_gm",
@@ -148,34 +140,31 @@ ___[___________]___
   |_____|
    😮‍💨💤
 """,
-            "vibe": "tired, monday"
+            "vibe": "tired, monday",
         },
-
         # Template 11: 箭头指向
         {
             "name": "arrow_gm",
             "art": """👈
 gm
 👇""",
-            "vibe": "playful, directional"
+            "vibe": "playful, directional",
         },
-
         # Template 12: 全球时区
         {
             "name": "global_gm",
             "art": """gn 🌍
 gm 🌎""",
-            "vibe": "global, inclusive"
+            "vibe": "global, inclusive",
         },
-
         # Template 13: 数据流简化版
         {
             "name": "data_minimal",
             "art": """01001000
    GM
 01101101""",
-            "vibe": "technical, minimal"
-        }
+            "vibe": "technical, minimal",
+        },
     ]
 
     @classmethod
@@ -190,7 +179,7 @@ gm 🌎""",
         Args:
             vibe: 'morning', 'tired', 'technical', 'milady', 'minimal', etc.
         """
-        matching = [t for t in cls.TEMPLATES if vibe.lower() in t['vibe'].lower()]
+        matching = [t for t in cls.TEMPLATES if vibe.lower() in t["vibe"].lower()]
 
         if matching:
             return random.choice(matching)
@@ -202,16 +191,16 @@ gm 🌎""",
         """根据星期几选择合适的 ASCII art"""
 
         day_vibes = {
-            'Monday': 'tired',
-            'Tuesday': 'technical',
-            'Wednesday': 'minimal',
-            'Thursday': 'work',
-            'Friday': 'minimal',
-            'Saturday': 'milady',
-            'Sunday': 'dreamy'
+            "Monday": "tired",
+            "Tuesday": "technical",
+            "Wednesday": "minimal",
+            "Thursday": "work",
+            "Friday": "minimal",
+            "Saturday": "milady",
+            "Sunday": "dreamy",
         }
 
-        vibe = day_vibes.get(day_of_week, 'minimal')
+        vibe = day_vibes.get(day_of_week, "minimal")
         return cls.get_art_by_vibe(vibe)
 
     @classmethod
@@ -238,18 +227,18 @@ def generate_ascii_gm(day_of_week: str = None, vibe: str = None) -> str:
     else:
         template = GMAsciiArt.get_random_art()
 
-    return template['art'].strip()
+    return template["art"].strip()
 
 
 # 测试
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("🧹 Jessie's ASCII GM Art Gallery\n")
     print("=" * 50)
 
     for i, template in enumerate(GMAsciiArt.TEMPLATES, 1):
         print(f"\n[{i}] {template['name']} ({template['vibe']})")
         print("-" * 50)
-        print(template['art'])
+        print(template["art"])
 
     print("\n" + "=" * 50)
     print("\n🎲 Random GM:")

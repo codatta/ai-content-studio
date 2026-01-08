@@ -17,52 +17,63 @@ import argparse
 
 
 def main():
-    parser = argparse.ArgumentParser(description='AI Content Studio 训练管理工具')
+    parser = argparse.ArgumentParser(description="AI Content Studio 训练管理工具")
 
-    subparsers = parser.add_subparsers(dest='command', help='可用命令')
+    subparsers = parser.add_subparsers(dest="command", help="可用命令")
 
     # 1. 检查新鲜度
-    check_parser = subparsers.add_parser('check', help='检查内容新鲜度')
-    check_parser.add_argument('--type', '-t', default='gm', choices=['gm', 'main', 'casual'],
-                             help='内容类型')
+    check_parser = subparsers.add_parser("check", help="检查内容新鲜度")
+    check_parser.add_argument(
+        "--type", "-t", default="gm", choices=["gm", "main", "casual"], help="内容类型"
+    )
 
     # 2. 查看仪表板
-    subparsers.add_parser('dashboard', help='显示学习状态仪表板')
+    subparsers.add_parser("dashboard", help="显示学习状态仪表板")
 
     # 3. 获取训练建议
-    suggest_parser = subparsers.add_parser('suggest', help='获取训练建议')
-    suggest_parser.add_argument('--type', '-t', default='gm', choices=['gm', 'main', 'casual'],
-                               help='内容类型')
+    suggest_parser = subparsers.add_parser("suggest", help="获取训练建议")
+    suggest_parser.add_argument(
+        "--type", "-t", default="gm", choices=["gm", "main", "casual"], help="内容类型"
+    )
 
     # 4. 生成训练模板
-    template_parser = subparsers.add_parser('template', help='生成训练样本模板')
-    template_parser.add_argument('--type', '-t', default='gm', choices=['gm', 'main', 'casual'],
-                                help='内容类型')
-    template_parser.add_argument('--count', '-c', type=int, default=5,
-                                help='生成几个样本模板')
-    template_parser.add_argument('--output', '-o',
-                                help='输出文件路径（默认打印到终端）')
+    template_parser = subparsers.add_parser("template", help="生成训练样本模板")
+    template_parser.add_argument(
+        "--type", "-t", default="gm", choices=["gm", "main", "casual"], help="内容类型"
+    )
+    template_parser.add_argument(
+        "--count", "-c", type=int, default=5, help="生成几个样本模板"
+    )
+    template_parser.add_argument(
+        "--output", "-o", help="输出文件路径（默认打印到终端）"
+    )
 
     # 5. 导入训练样本
-    import_parser = subparsers.add_parser('import', help='从模板文件导入训练样本')
-    import_parser.add_argument('file', help='模板文件路径')
+    import_parser = subparsers.add_parser("import", help="从模板文件导入训练样本")
+    import_parser.add_argument("file", help="模板文件路径")
 
     # 6. 手动添加样本
-    add_parser = subparsers.add_parser('add', help='手动添加单个训练样本')
-    add_parser.add_argument('--type', '-t', default='gm', choices=['gm', 'main', 'casual'],
-                           help='内容类型')
-    add_parser.add_argument('--text', required=True, help='推文内容')
-    add_parser.add_argument('--style', default='unknown', help='风格')
-    add_parser.add_argument('--engagement', default='unknown', help='互动情况')
-    add_parser.add_argument('--notes', default='', help='备注')
+    add_parser = subparsers.add_parser("add", help="手动添加单个训练样本")
+    add_parser.add_argument(
+        "--type", "-t", default="gm", choices=["gm", "main", "casual"], help="内容类型"
+    )
+    add_parser.add_argument("--text", required=True, help="推文内容")
+    add_parser.add_argument("--style", default="unknown", help="风格")
+    add_parser.add_argument("--engagement", default="unknown", help="互动情况")
+    add_parser.add_argument("--notes", default="", help="备注")
 
     # 7. 查看历史记录
-    history_parser = subparsers.add_parser('history', help='查看生成历史和报警')
-    history_parser.add_argument('--type', '-t', default='all',
-                               choices=['all', 'posts', 'alerts', 'training'],
-                               help='历史类型')
-    history_parser.add_argument('--limit', '-n', type=int, default=10,
-                               help='显示最近 N 条')
+    history_parser = subparsers.add_parser("history", help="查看生成历史和报警")
+    history_parser.add_argument(
+        "--type",
+        "-t",
+        default="all",
+        choices=["all", "posts", "alerts", "training"],
+        help="历史类型",
+    )
+    history_parser.add_argument(
+        "--limit", "-n", type=int, default=10, help="显示最近 N 条"
+    )
 
     args = parser.parse_args()
 
@@ -71,25 +82,25 @@ def main():
         return
 
     # 执行命令
-    if args.command == 'check':
+    if args.command == "check":
         cmd_check(args.type)
 
-    elif args.command == 'dashboard':
+    elif args.command == "dashboard":
         cmd_dashboard()
 
-    elif args.command == 'suggest':
+    elif args.command == "suggest":
         cmd_suggest(args.type)
 
-    elif args.command == 'template':
+    elif args.command == "template":
         cmd_template(args.type, args.count, args.output)
 
-    elif args.command == 'import':
+    elif args.command == "import":
         cmd_import(args.file)
 
-    elif args.command == 'add':
+    elif args.command == "add":
         cmd_add(args.type, args.text, args.style, args.engagement, args.notes)
 
-    elif args.command == 'history':
+    elif args.command == "history":
         cmd_history(args.type, args.limit)
 
 
@@ -124,9 +135,9 @@ def cmd_suggest(content_type: str):
     print(f"优先级: {suggestions['priority']}")
     print(f"新鲜度得分: {suggestions['freshness_score']:.2f} / 1.00\n")
 
-    if suggestions['suggestions']:
+    if suggestions["suggestions"]:
         print("💡 建议:\n")
-        for i, s in enumerate(suggestions['suggestions'], 1):
+        for i, s in enumerate(suggestions["suggestions"], 1):
             print(f"{i}. {s['description']}")
             print(f"   例如: {s['example']}\n")
 
@@ -137,7 +148,7 @@ def cmd_template(content_type: str, count: int, output_file: str = None):
     template = system.generate_training_template(content_type, count)
 
     if output_file:
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             f.write(template)
         print(f"✅ 模板已保存到: {output_file}")
         print(f"📝 请填写模板后使用 'manage_training.py import {output_file}' 导入")
@@ -150,7 +161,7 @@ def cmd_import(template_file: str):
     system = ContinuousLearningSystem()
     result = system.import_from_template(template_file)
 
-    if result['success']:
+    if result["success"]:
         print(f"✅ {result['message']}")
         print(f"   已添加: {result['added_count']} 个样本")
         print(f"   总样本数: {result['total_samples']}")
@@ -163,20 +174,13 @@ def cmd_add(content_type: str, text: str, style: str, engagement: str, notes: st
     """手动添加单个样本"""
     system = ContinuousLearningSystem()
 
-    sample = {
-        'text': text,
-        'style': style,
-        'engagement': engagement
-    }
+    sample = {"text": text, "style": style, "engagement": engagement}
 
     result = system.add_training_samples(
-        content_type=content_type,
-        samples=[sample],
-        source='manual',
-        notes=notes
+        content_type=content_type, samples=[sample], source="manual", notes=notes
     )
 
-    if result['success']:
+    if result["success"]:
         print(f"✅ {result['message']}")
         print(f"   新样本 ID: {result['new_ids'][0]}")
     else:
@@ -188,36 +192,38 @@ def cmd_history(history_type: str, limit: int):
     monitor = ContentFreshnessMonitor()
     history = monitor.history
 
-    if history_type in ['all', 'posts']:
+    if history_type in ["all", "posts"]:
         print(f"\n📝 最近生成的推文 (最新 {limit} 条):\n")
-        posts = history['generated_posts'][-limit:]
+        posts = history["generated_posts"][-limit:]
         for post in posts:
             print(f"[{post['id']}] {post['timestamp'][:10]} | {post['content_type']}")
             print(f"    {post['text'][:80]}{'...' if len(post['text']) > 80 else ''}")
             print()
 
-    if history_type in ['all', 'alerts']:
+    if history_type in ["all", "alerts"]:
         print(f"\n⚠️ 最近的报警 (最新 {limit} 条):\n")
-        alerts = history['alerts'][-limit:]
+        alerts = history["alerts"][-limit:]
         if alerts:
             for alert_record in alerts:
                 print(f"时间: {alert_record['timestamp'][:19]}")
                 print(f"类型: {alert_record['content_type']}")
                 print(f"新鲜度: {alert_record['freshness_score']:.2f}")
-                for alert in alert_record['alerts']:
+                for alert in alert_record["alerts"]:
                     print(f"  - {alert['message']}")
                 print()
         else:
             print("  (无报警记录)")
             print()
 
-    if history_type in ['all', 'training']:
+    if history_type in ["all", "training"]:
         print(f"\n📚 训练更新历史 (最新 {limit} 条):\n")
-        updates = history['training_data_updates'][-limit:]
+        updates = history["training_data_updates"][-limit:]
         if updates:
             for update in updates:
-                print(f"{update['date'][:10]} | {update['type']} (+{update['samples_added']} 样本)")
-                if update['notes']:
+                print(
+                    f"{update['date'][:10]} | {update['type']} (+{update['samples_added']} 样本)"
+                )
+                if update["notes"]:
                     print(f"  备注: {update['notes']}")
                 print()
         else:
@@ -225,5 +231,5 @@ def cmd_history(history_type: str, limit: int):
             print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

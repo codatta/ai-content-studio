@@ -1,43 +1,39 @@
 """获取Lark群组ID"""
+
 import requests
 from src.core.config import Config
+
 
 def get_tenant_access_token():
     """获取tenant_access_token"""
     url = "https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal"
-    payload = {
-        "app_id": Config.LARK_APP_ID,
-        "app_secret": Config.LARK_APP_SECRET
-    }
+    payload = {"app_id": Config.LARK_APP_ID, "app_secret": Config.LARK_APP_SECRET}
 
     response = requests.post(url, json=payload)
     data = response.json()
 
-    if data.get('code') == 0:
-        return data['tenant_access_token']
+    if data.get("code") == 0:
+        return data["tenant_access_token"]
     else:
         print(f"获取token失败: {data}")
         return None
 
+
 def get_bot_chats(access_token):
     """获取机器人所在的群组列表"""
     url = "https://open.larksuite.com/open-apis/im/v1/chats"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    params = {
-        "user_id_type": "open_id",
-        "page_size": 20
-    }
+    headers = {"Authorization": f"Bearer {access_token}"}
+    params = {"user_id_type": "open_id", "page_size": 20}
 
     response = requests.get(url, headers=headers, params=params)
     data = response.json()
 
-    if data.get('code') == 0:
-        return data.get('data', {}).get('items', [])
+    if data.get("code") == 0:
+        return data.get("data", {}).get("items", [])
     else:
         print(f"获取群组失败: {data}")
         return []
+
 
 if __name__ == "__main__":
     print("=" * 50)

@@ -36,7 +36,7 @@ class ReplicateIllusion:
         guidance_scale: float = 7.5,
         controlnet_conditioning_scale: float = 1.4,
         seed: Optional[int] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> str:
         """
         使用 Replicate ControlNet 生成图像
@@ -89,8 +89,8 @@ class ReplicateIllusion:
                         "qr_code_content": "",  # 不生成 QR code，只做风格转换
                         "width": 768,
                         "height": 768,
-                        "num_outputs": 1
-                    }
+                        "num_outputs": 1,
+                    },
                 )
 
             # output 是一个 URL 列表
@@ -104,6 +104,7 @@ class ReplicateIllusion:
             # 下载生成的图片
             if output_path:
                 import requests
+
                 Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
                 response = requests.get(output_url)
@@ -120,7 +121,9 @@ class ReplicateIllusion:
                 temp_dir = Path("output/lark")
                 temp_dir.mkdir(parents=True, exist_ok=True)
 
-                temp_path = temp_dir / f"replicate_illusion_{Path(control_image_path).stem}.png"
+                temp_path = (
+                    temp_dir / f"replicate_illusion_{Path(control_image_path).stem}.png"
+                )
 
                 response = requests.get(output_url)
                 with open(temp_path, "wb") as f:
@@ -142,7 +145,7 @@ class ReplicateIllusion:
         positive_prompt_template: Optional[str] = None,
         negative_prompt: Optional[str] = None,
         guidance_scale: float = 7.0,
-        num_inference_steps: int = 40
+        num_inference_steps: int = 40,
     ) -> str:
         """
         为 Milady NFT 添加特效
@@ -179,7 +182,7 @@ class ReplicateIllusion:
             controlnet_conditioning_scale=effect_strength,
             guidance_scale=guidance_scale,
             num_inference_steps=num_inference_steps,
-            output_path=output_path
+            output_path=output_path,
         )
 
 
@@ -193,15 +196,14 @@ def test_replicate_illusion():
     print("\n📸 Step 1: 生成基础 Milady NFT #5555")
     meme_gen = MemeGeneratorV2()
     base_nft_path = meme_gen.generate(
-        nft_id=5555,
-        layers={},
-        output_path="output/lark/milady_5555_test_base.png"
+        nft_id=5555, layers={}, output_path="output/lark/milady_5555_test_base.png"
     )
     print(f"✅ 基础 NFT 已生成: {base_nft_path}")
 
     # Step 2: 应用 Replicate ControlNet 特效
     print("\n✨ Step 2: 应用 Replicate ControlNet 特效")
     import os
+
     api_token = os.getenv("REPLICATE_API_TOKEN")
     if not api_token:
         raise ValueError("❌ REPLICATE_API_TOKEN 未配置，请在 config/.env 中设置")
@@ -211,7 +213,7 @@ def test_replicate_illusion():
         milady_nft_path=base_nft_path,
         description="holding pizza, caption $XNY to $1, cyberpunk neon style",
         output_path="output/lark/milady_5555_replicate_test.png",
-        effect_strength=1.4
+        effect_strength=1.4,
     )
 
     print(f"\n✅ 测试完成！")

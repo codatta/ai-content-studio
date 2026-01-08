@@ -39,7 +39,7 @@ try:
         NUM_INFERENCE_STEPS,
         POSITIVE_PROMPT_TEMPLATE,
         NEGATIVE_PROMPT,
-        PRESETS
+        PRESETS,
     )
 except ImportError:
     # 如果配置文件不存在，使用默认值
@@ -55,10 +55,7 @@ class LarkMemeBot:
     """飞书 Meme 机器人 - V2 版本"""
 
     def __init__(
-        self,
-        app_id: str,
-        app_secret: str,
-        verification_token: Optional[str] = None
+        self, app_id: str, app_secret: str, verification_token: Optional[str] = None
     ):
         """
         初始化飞书机器人
@@ -124,10 +121,7 @@ class LarkMemeBot:
         """
         url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
 
-        payload = {
-            "app_id": self.app_id,
-            "app_secret": self.app_secret
-        }
+        payload = {"app_id": self.app_id, "app_secret": self.app_secret}
 
         response = requests.post(url, json=payload)
         data = response.json()
@@ -153,17 +147,11 @@ class LarkMemeBot:
 
         url = "https://open.feishu.cn/open-apis/im/v1/images"
 
-        headers = {
-            "Authorization": f"Bearer {self.access_token}"
-        }
+        headers = {"Authorization": f"Bearer {self.access_token}"}
 
-        files = {
-            "image": open(image_path, "rb")
-        }
+        files = {"image": open(image_path, "rb")}
 
-        data = {
-            "image_type": "message"
-        }
+        data = {"image_type": "message"}
 
         response = requests.post(url, headers=headers, files=files, data=data)
         result = response.json()
@@ -174,10 +162,7 @@ class LarkMemeBot:
             raise Exception(f"上传图片失败: {result}")
 
     def send_image_message(
-        self,
-        receive_id: str,
-        image_key: str,
-        receive_id_type: str = "chat_id"
+        self, receive_id: str, image_key: str, receive_id_type: str = "chat_id"
     ):
         """
         发送图片消息
@@ -194,19 +179,15 @@ class LarkMemeBot:
 
         headers = {
             "Authorization": f"Bearer {self.access_token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
-        params = {
-            "receive_id_type": receive_id_type
-        }
+        params = {"receive_id_type": receive_id_type}
 
         payload = {
             "receive_id": receive_id,
             "msg_type": "image",
-            "content": json.dumps({
-                "image_key": image_key
-            })
+            "content": json.dumps({"image_key": image_key}),
         }
 
         response = requests.post(url, headers=headers, params=params, json=payload)
@@ -220,7 +201,7 @@ class LarkMemeBot:
         receive_id: str,
         title: str,
         content: str,
-        receive_id_type: str = "chat_id"
+        receive_id_type: str = "chat_id",
     ):
         """
         发送卡片消息
@@ -238,39 +219,26 @@ class LarkMemeBot:
 
         headers = {
             "Authorization": f"Bearer {self.access_token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
-        params = {
-            "receive_id_type": receive_id_type
-        }
+        params = {"receive_id_type": receive_id_type}
 
         card = {
-            "config": {
-                "wide_screen_mode": True
-            },
+            "config": {"wide_screen_mode": True},
             "header": {
-                "title": {
-                    "tag": "plain_text",
-                    "content": title
-                },
-                "template": "blue"
+                "title": {"tag": "plain_text", "content": title},
+                "template": "blue",
             },
             "elements": [
-                {
-                    "tag": "div",
-                    "text": {
-                        "tag": "lark_md",
-                        "content": content
-                    }
-                }
-            ]
+                {"tag": "div", "text": {"tag": "lark_md", "content": content}}
+            ],
         }
 
         payload = {
             "receive_id": receive_id,
             "msg_type": "interactive",
-            "content": json.dumps(card)
+            "content": json.dumps(card),
         }
 
         response = requests.post(url, headers=headers, params=params, json=payload)
@@ -302,12 +270,19 @@ class LarkMemeBot:
             "top_text": "",
             "bottom_text": "",
             "font_style": "impact",
-            "all_caps": True
+            "all_caps": True,
         }
 
         for arg in args:
             # 图层格式: Hat:Beret.png 或 Overlay:Gunpoint.png
-            if ":" in arg and arg.split(":")[0] in ["Hat", "Glasses", "Earrings", "Necklaces", "Face Decoration", "Overlay"]:
+            if ":" in arg and arg.split(":")[0] in [
+                "Hat",
+                "Glasses",
+                "Earrings",
+                "Necklaces",
+                "Face Decoration",
+                "Overlay",
+            ]:
                 layer_type, layer_name = arg.split(":", 1)
                 # 支持同一类别多个图层
                 if layer_type not in params["layers"]:
@@ -345,11 +320,7 @@ class LarkMemeBot:
 
         return params
 
-    def handle_natural_language(
-        self,
-        prompt: str,
-        chat_id: str
-    ) -> str:
+    def handle_natural_language(self, prompt: str, chat_id: str) -> str:
         """
         处理自然语言 prompt
 
@@ -381,7 +352,7 @@ class LarkMemeBot:
                 bottom_text=params["bottom_text"],
                 font_style=params["font_style"],
                 all_caps=params["all_caps"],
-                output_path=output_path
+                output_path=output_path,
             )
 
         # 检查是否包含视觉风格描述（如 liminal space illusion）
@@ -394,7 +365,7 @@ class LarkMemeBot:
                 prompt=prompt,
                 bypass_enhancer=False,
                 nft_id=params["nft_id"],
-                output_path=output_path
+                output_path=output_path,
             )
 
             # 当前版本：Prompt Enhancer 只返回增强后的文本
@@ -409,7 +380,7 @@ class LarkMemeBot:
                     template_name=params["template"],
                     nft_id=params["nft_id"],
                     layers=params["layers"] if params["layers"] else None,
-                    output_path=output_path
+                    output_path=output_path,
                 )
             else:
                 return self.meme_generator.generate(
@@ -419,7 +390,7 @@ class LarkMemeBot:
                     bottom_text=params["bottom_text"] or "MEME",
                     font_style=params["font_style"],
                     all_caps=params["all_caps"],
-                    output_path=output_path
+                    output_path=output_path,
                 )
 
         # 标准流程：根据解析结果生成
@@ -434,7 +405,7 @@ class LarkMemeBot:
                 bottom_text=params["bottom_text"],
                 font_style=params["font_style"],
                 all_caps=params["all_caps"],
-                output_path=output_path
+                output_path=output_path,
             )
 
         # 2. 如果指定了图层，用户想要自定义 NFT + 图层，不要用模板
@@ -447,7 +418,7 @@ class LarkMemeBot:
                 bottom_text=None,
                 font_style=params["font_style"],
                 all_caps=params["all_caps"],
-                output_path=output_path
+                output_path=output_path,
             )
 
         # 3. 如果有模板，使用模板
@@ -456,7 +427,7 @@ class LarkMemeBot:
                 template_name=params["template"],
                 nft_id=params["nft_id"],
                 layers=None,  # 模板模式不使用额外图层
-                output_path=output_path
+                output_path=output_path,
             )
 
         # 4. 默认：随机 NFT + 默认文字
@@ -466,15 +437,10 @@ class LarkMemeBot:
                 layers=None,
                 top_text="MILADY",
                 bottom_text="MEME",
-                output_path=output_path
+                output_path=output_path,
             )
 
-    def handle_slash_command(
-        self,
-        command: str,
-        args: list,
-        chat_id: str
-    ) -> str:
+    def handle_slash_command(self, command: str, args: list, chat_id: str) -> str:
         """
         处理斜杠命令（V2 版本）
 
@@ -538,7 +504,7 @@ class LarkMemeBot:
                     template_name=params["template"],
                     nft_id=params["nft_id"],
                     layers=params["layers"] if params["layers"] else None,
-                    output_path=output_path
+                    output_path=output_path,
                 )
             else:
                 # 自定义或随机
@@ -549,17 +515,13 @@ class LarkMemeBot:
                     bottom_text=params["bottom_text"],
                     font_style=params["font_style"],
                     all_caps=params["all_caps"],
-                    output_path=output_path
+                    output_path=output_path,
                 )
 
         else:
             raise ValueError(f"未知命令: {command}")
 
-    def handle_memegen_command(
-        self,
-        args: list,
-        chat_id: str
-    ) -> str:
+    def handle_memegen_command(self, args: list, chat_id: str) -> str:
         """
         处理 Memegen.link 命令
 
@@ -626,28 +588,66 @@ class LarkMemeBot:
                 list_text = f"📋 **Memegen 所有可用模板** (共 {len(templates)} 个)\n\n"
 
                 # 按字母顺序排序
-                sorted_templates = sorted(templates, key=lambda x: x['id'])
+                sorted_templates = sorted(templates, key=lambda x: x["id"])
 
                 # 根据模板名称智能生成使用场景
                 def get_scene_hint(name, template_id):
                     name_lower = name.lower()
                     # 对比/选择类
-                    if any(word in name_lower for word in ['choice', 'drake', 'button', 'boyfriend', 'distracted', 'balloon']):
+                    if any(
+                        word in name_lower
+                        for word in [
+                            "choice",
+                            "drake",
+                            "button",
+                            "boyfriend",
+                            "distracted",
+                            "balloon",
+                        ]
+                    ):
                         return "适合：对比两个选项"
                     # 反应/情绪类
-                    elif any(word in name_lower for word in ['fine', 'afraid', 'scared', 'surprised', 'think', 'waiting']):
+                    elif any(
+                        word in name_lower
+                        for word in [
+                            "fine",
+                            "afraid",
+                            "scared",
+                            "surprised",
+                            "think",
+                            "waiting",
+                        ]
+                    ):
                         return "适合：表达情绪反应"
                     # 陈述/真相类
-                    elif any(word in name_lower for word in ['aliens', 'always', 'said', 'facts', 'change my mind']):
+                    elif any(
+                        word in name_lower
+                        for word in [
+                            "aliens",
+                            "always",
+                            "said",
+                            "facts",
+                            "change my mind",
+                        ]
+                    ):
                         return "适合：陈述观点"
                     # 庆祝/成功类
-                    elif any(word in name_lower for word in ['success', 'winner', 'yeah', 'celebration']):
+                    elif any(
+                        word in name_lower
+                        for word in ["success", "winner", "yeah", "celebration"]
+                    ):
                         return "适合：庆祝成功"
                     # 讽刺/搞笑类
-                    elif any(word in name_lower for word in ['picard', 'fry', 'suspicious', 'everywhere']):
+                    elif any(
+                        word in name_lower
+                        for word in ["picard", "fry", "suspicious", "everywhere"]
+                    ):
                         return "适合：讽刺吐槽"
                     # 动物类
-                    elif any(word in name_lower for word in ['cat', 'dog', 'seal', 'penguin', 'boat']):
+                    elif any(
+                        word in name_lower
+                        for word in ["cat", "dog", "seal", "penguin", "boat"]
+                    ):
                         return "适合：可爱/搞笑场景"
                     # 默认
                     else:
@@ -655,29 +655,37 @@ class LarkMemeBot:
 
                 # 每个模板显示：序号 | ID | 名称 | 场景 | 预览链接
                 for idx, t in enumerate(sorted_templates, 1):
-                    template_id = t['id']
-                    template_name = t['name']
+                    template_id = t["id"]
+                    template_name = t["name"]
 
                     # 生成使用场景提示
                     scene_hint = get_scene_hint(template_name, template_id)
 
                     # 构建 memecomplete.com 的编辑页面链接
-                    if 'example' in t and 'text' in t['example']:
-                        example_texts = t['example']['text']
-                        top = example_texts[0] if len(example_texts) > 0 and example_texts[0] else '_'
-                        bottom = example_texts[1] if len(example_texts) > 1 and example_texts[1] else '_'
+                    if "example" in t and "text" in t["example"]:
+                        example_texts = t["example"]["text"]
+                        top = (
+                            example_texts[0]
+                            if len(example_texts) > 0 and example_texts[0]
+                            else "_"
+                        )
+                        bottom = (
+                            example_texts[1]
+                            if len(example_texts) > 1 and example_texts[1]
+                            else "_"
+                        )
                     else:
-                        top = '_'
-                        bottom = '_'
+                        top = "_"
+                        bottom = "_"
 
                     # URL编码 - 使用 memegen_api 的编码函数
-                    if top == '_':
-                        top_encoded = '_'
+                    if top == "_":
+                        top_encoded = "_"
                     else:
                         top_encoded = self.memegen_api._encode_text(top)
 
-                    if bottom == '_':
-                        bottom_encoded = '_'
+                    if bottom == "_":
+                        bottom_encoded = "_"
                     else:
                         bottom_encoded = self.memegen_api._encode_text(bottom)
 
@@ -739,7 +747,7 @@ class LarkMemeBot:
                     template=template,
                     top_text=top,
                     bottom_text=bottom,
-                    output_path=output_path
+                    output_path=output_path,
                 )
                 return result  # 返回图片路径，会自动发送到飞书
             except Exception as e:
@@ -753,7 +761,7 @@ class LarkMemeBot:
 
         # 普通生成命令
         template = args[0].strip('"')
-        remaining_text = ' '.join(args[1:])
+        remaining_text = " ".join(args[1:])
 
         top_text = remaining_text
         bottom_text = ""
@@ -772,7 +780,7 @@ class LarkMemeBot:
                 template=template,
                 top_text=top_text,
                 bottom_text=bottom_text,
-                output_path=output_path
+                output_path=output_path,
             )
         except Exception as e:
             error_type = str(e)
@@ -818,7 +826,7 @@ class LarkMemeBot:
             positive_prompt: same character holding pizza, superrealistic style, highly detailed
             negative_prompt: low quality, blurry, different person
         """
-        if len(args) < 1 or (len(args) == 1 and args[0] == 'help'):
+        if len(args) < 1 or (len(args) == 1 and args[0] == "help"):
             help_msg = """✨ **Milady AI 特效生成器**
 
 使用 AI 为 Milady NFT 添加特效！
@@ -891,10 +899,10 @@ negative_prompt: low quality, blurry, different person, anime, cartoon
         # 解析参数
         try:
             nft_id = int(args[0])
-            remaining_text = ' '.join(args[1:])
+            remaining_text = " ".join(args[1:])
 
             # 检查是否提供了必需的参数
-            if 'positive_prompt:' not in remaining_text:
+            if "positive_prompt:" not in remaining_text:
                 error_msg = """❌ 必须提供 positive_prompt 参数
 
 **正确格式:**
@@ -919,9 +927,11 @@ negative_prompt: low quality, blurry, different person
             print("🎨 使用高级模式，解析自定义参数...")
 
             # 解析 effect_strength（可选，使用配置文件默认值）
-            if 'effect_strength:' in remaining_text:
+            if "effect_strength:" in remaining_text:
                 try:
-                    es_match = re.search(r'effect_strength:\s*([\d.]+)', remaining_text, re.IGNORECASE)
+                    es_match = re.search(
+                        r"effect_strength:\s*([\d.]+)", remaining_text, re.IGNORECASE
+                    )
                     if es_match:
                         effect_strength = float(es_match.group(1))
                         print(f"   Effect Strength: {effect_strength}")
@@ -929,7 +939,11 @@ negative_prompt: low quality, blurry, different person
                     print(f"   解析 effect_strength 失败: {e}")
 
             # 解析 positive_prompt（必需）
-            pp_match = re.search(r'positive_prompt:\s*([^\n]+?)(?=\s*negative_prompt:|guidance_scale:|num_inference_steps:|$)', remaining_text, re.IGNORECASE | re.DOTALL)
+            pp_match = re.search(
+                r"positive_prompt:\s*([^\n]+?)(?=\s*negative_prompt:|guidance_scale:|num_inference_steps:|$)",
+                remaining_text,
+                re.IGNORECASE | re.DOTALL,
+            )
             if pp_match:
                 positive_prompt = pp_match.group(1).strip()
                 print(f"   Positive Prompt: {positive_prompt[:80]}...")
@@ -944,8 +958,12 @@ positive_prompt: same character holding pizza, detailed
                 return ""
 
             # 解析 negative_prompt（可选）
-            if 'negative_prompt:' in remaining_text:
-                np_match = re.search(r'negative_prompt:\s*([^\n]+?)(?=\s*guidance_scale:|num_inference_steps:|$)', remaining_text, re.IGNORECASE | re.DOTALL)
+            if "negative_prompt:" in remaining_text:
+                np_match = re.search(
+                    r"negative_prompt:\s*([^\n]+?)(?=\s*guidance_scale:|num_inference_steps:|$)",
+                    remaining_text,
+                    re.IGNORECASE | re.DOTALL,
+                )
                 if np_match:
                     negative_prompt = np_match.group(1).strip()
                     if not negative_prompt:  # 如果为空，使用默认值
@@ -953,9 +971,11 @@ positive_prompt: same character holding pizza, detailed
                     print(f"   Negative Prompt: {negative_prompt[:80]}...")
 
             # 解析 guidance_scale（可选）
-            if 'guidance_scale:' in remaining_text:
+            if "guidance_scale:" in remaining_text:
                 try:
-                    gs_match = re.search(r'guidance_scale:\s*([\d.]+)', remaining_text, re.IGNORECASE)
+                    gs_match = re.search(
+                        r"guidance_scale:\s*([\d.]+)", remaining_text, re.IGNORECASE
+                    )
                     if gs_match:
                         guidance_scale = float(gs_match.group(1))
                         print(f"   Guidance Scale: {guidance_scale}")
@@ -963,9 +983,11 @@ positive_prompt: same character holding pizza, detailed
                     print(f"   解析 guidance_scale 失败: {e}")
 
             # 解析 num_inference_steps（可选）
-            if 'num_inference_steps:' in remaining_text:
+            if "num_inference_steps:" in remaining_text:
                 try:
-                    ni_match = re.search(r'num_inference_steps:\s*(\d+)', remaining_text, re.IGNORECASE)
+                    ni_match = re.search(
+                        r"num_inference_steps:\s*(\d+)", remaining_text, re.IGNORECASE
+                    )
                     if ni_match:
                         num_inference_steps = int(ni_match.group(1))
                         print(f"   Inference Steps: {num_inference_steps}")
@@ -993,7 +1015,9 @@ positive_prompt: same character, detailed
             try:
                 replicate_token = os.getenv("REPLICATE_API_TOKEN")
                 if not replicate_token:
-                    raise ValueError("REPLICATE_API_TOKEN 未配置，请在 config/.env 中设置")
+                    raise ValueError(
+                        "REPLICATE_API_TOKEN 未配置，请在 config/.env 中设置"
+                    )
                 self.replicate_illusion = ReplicateIllusion(api_token=replicate_token)
                 print("✅ Replicate ControlNet 客户端已初始化")
             except Exception as e:
@@ -1011,7 +1035,7 @@ positive_prompt: same character, detailed
                 layers=None,
                 top_text=None,
                 bottom_text=None,
-                output_path=base_nft_path
+                output_path=base_nft_path,
             )
         except Exception as e:
             error_msg = f"❌ 生成 NFT #{nft_id} 失败: {str(e)}"
@@ -1034,7 +1058,7 @@ positive_prompt: same character, detailed
                 positive_prompt_template=positive_prompt_template,
                 negative_prompt=negative_prompt,
                 guidance_scale=guidance_scale,
-                num_inference_steps=num_inference_steps
+                num_inference_steps=num_inference_steps,
             )
             return result
         except Exception as e:
@@ -1133,13 +1157,14 @@ steps: 28
             "项链": "necklace",
             "衣服": "clothes",
             "上衣": "clothes",
-            "外套": "clothes"
+            "外套": "clothes",
         }
 
         # 延迟加载 FLUX Fill Pro
         if self.flux_fill_pro is None:
             try:
                 from src.meme.flux_fill_pro import FluxFillPro
+
                 self.flux_fill_pro = FluxFillPro()
             except Exception as e:
                 error_msg = f"❌ FLUX Fill Pro 初始化失败: {str(e)}\n\n请检查 REPLICATE_API_TOKEN 是否配置正确"
@@ -1202,11 +1227,14 @@ steps: 28
 
         # 智能配饰类型推断（支持任意中英文配饰名称）
         from src.meme.sam_detector import SAMDetector
+
         original_accessory = accessory_type
         accessory_type, display_name = SAMDetector.infer_accessory_type(accessory_type)
 
         if original_accessory.lower() != accessory_type:
-            print(f"🎯 智能推断: '{original_accessory}' → {accessory_type} ({display_name})")
+            print(
+                f"🎯 智能推断: '{original_accessory}' → {accessory_type} ({display_name})"
+            )
 
         # 发送处理中消息
         processing_msg = f"""🎨 **正在替换配饰...**
@@ -1230,11 +1258,13 @@ steps: 28
                 top_text="",
                 bottom_text="",
                 output_path=base_image_path,
-                output_size=(500, 500)  # 使用标准 NFT 尺寸
+                output_size=(500, 500),  # 使用标准 NFT 尺寸
             )
 
             if not os.path.exists(base_image_path):
-                raise FileNotFoundError(f"基础 Milady NFT 图片生成失败: {base_image_path}")
+                raise FileNotFoundError(
+                    f"基础 Milady NFT 图片生成失败: {base_image_path}"
+                )
 
             # 2. 使用 FLUX Fill Pro 替换配饰
             output_path = f"/tmp/milady_{nft_id}_replaced_{accessory_type}.png"
@@ -1245,7 +1275,7 @@ steps: 28
                 new_description=new_description,
                 output_path=output_path,
                 guidance=guidance,
-                num_inference_steps=steps
+                num_inference_steps=steps,
             )
 
             # 3. 发送成功消息
@@ -1265,6 +1295,7 @@ steps: 28
 
         except Exception as e:
             import traceback
+
             error_str = str(e)
             error_trace = traceback.format_exc()
 
@@ -1368,6 +1399,7 @@ steps: 28
         if self.flux_fill_pro is None or not self.flux_fill_pro.use_sam:
             try:
                 from src.meme.flux_fill_pro import FluxFillPro
+
                 self.flux_fill_pro = FluxFillPro(use_sam=True)  # 启用 SAM
                 print("✅ FLUX Fill Pro + SAM 已初始化")
             except Exception as e:
@@ -1431,14 +1463,19 @@ steps: 28
 
         # 智能配饰类型推断（支持任意中英文配饰名称）
         from src.meme.sam_detector import SAMDetector
+
         original_accessory = accessory_type
         accessory_type, display_name = SAMDetector.infer_accessory_type(accessory_type)
 
         if original_accessory.lower() != accessory_type:
-            print(f"🎯 智能推断: '{original_accessory}' → {accessory_type} ({display_name})")
+            print(
+                f"🎯 智能推断: '{original_accessory}' → {accessory_type} ({display_name})"
+            )
 
         # 🎯 智能模式选择：根据配饰类型和描述自动决定用 SAM 还是预定义
-        use_sam_for_this, decision_reason = SAMDetector.should_use_sam(accessory_type, new_description)
+        use_sam_for_this, decision_reason = SAMDetector.should_use_sam(
+            accessory_type, new_description
+        )
 
         # 发送处理中消息
         mode_text = "SAM 自动检测" if use_sam_for_this else "预定义区域"
@@ -1474,11 +1511,13 @@ steps: 28
                 top_text="",
                 bottom_text="",
                 output_path=base_image_path,
-                output_size=(500, 500)  # 使用标准 NFT 尺寸
+                output_size=(500, 500),  # 使用标准 NFT 尺寸
             )
 
             if not os.path.exists(base_image_path):
-                raise FileNotFoundError(f"基础 Milady NFT 图片生成失败: {base_image_path}")
+                raise FileNotFoundError(
+                    f"基础 Milady NFT 图片生成失败: {base_image_path}"
+                )
 
             # 2. 使用 FLUX Fill Pro (智能选择 SAM 或预定义)
             output_path = f"/tmp/milady_{nft_id}_smart_replaced_{accessory_type}.png"
@@ -1491,17 +1530,21 @@ steps: 28
                 output_path=output_path,
                 guidance=guidance,
                 num_inference_steps=steps,
-                force_sam=use_sam_for_this  # 🎯 智能选择
+                force_sam=use_sam_for_this,  # 🎯 智能选择
             )
 
             # 3. 发送成功消息（包含模式信息）
-            detection_info = f"""🔍 **SAM 自动检测:**
+            detection_info = (
+                f"""🔍 **SAM 自动检测:**
 • 自动检测配饰区域
 • 智能匹配算法
-• 比预定义区域更精确""" if use_sam_for_this else f"""📍 **预定义区域:**
+• 比预定义区域更精确"""
+                if use_sam_for_this
+                else f"""📍 **预定义区域:**
 • 使用固定配饰位置
 • 稳定可靠
 • 成本更低（节省 $0.011）"""
+            )
 
             success_msg = f"""✅ **配饰替换成功！**
 
@@ -1523,6 +1566,7 @@ steps: 28
 
         except Exception as e:
             import traceback
+
             error_str = str(e)
             error_trace = traceback.format_exc()
 
@@ -1598,36 +1642,36 @@ steps: 28
         template = None
         text_parts = []
         options = {
-            'font': None,
-            'color': None,
-            'width': None,
-            'height': None,
-            'style': None
+            "font": None,
+            "color": None,
+            "width": None,
+            "height": None,
+            "style": None,
         }
 
         for arg in args:
-            if arg.startswith('--'):
+            if arg.startswith("--"):
                 # 解析选项
-                if '=' in arg:
-                    key, value = arg[2:].split('=', 1)
+                if "=" in arg:
+                    key, value = arg[2:].split("=", 1)
                     key = key.lower()
 
-                    if key == 'font':
-                        options['font'] = value
-                    elif key == 'color':
-                        options['color'] = value
-                    elif key == 'size':
+                    if key == "font":
+                        options["font"] = value
+                    elif key == "color":
+                        options["color"] = value
+                    elif key == "size":
                         # 解析 800x600 格式
-                        if 'x' in value.lower():
-                            parts = value.lower().split('x')
+                        if "x" in value.lower():
+                            parts = value.lower().split("x")
                             if len(parts) == 2:
                                 try:
-                                    options['width'] = int(parts[0])
-                                    options['height'] = int(parts[1])
+                                    options["width"] = int(parts[0])
+                                    options["height"] = int(parts[1])
                                 except ValueError:
                                     pass
-                    elif key == 'style':
-                        options['style'] = value
+                    elif key == "style":
+                        options["style"] = value
             else:
                 # 普通文字参数
                 if template is None:
@@ -1641,7 +1685,7 @@ steps: 28
             return ""
 
         # 组合文字
-        full_text = ' '.join(text_parts)
+        full_text = " ".join(text_parts)
         top_text = full_text
         bottom_text = ""
 
@@ -1654,11 +1698,11 @@ steps: 28
                 top_text=top_text,
                 bottom_text=bottom_text,
                 output_path=output_path,
-                font=options['font'],
-                color=options['color'],
-                width=options['width'],
-                height=options['height'],
-                style=options['style']
+                font=options["font"],
+                color=options["color"],
+                width=options["width"],
+                height=options["height"],
+                style=options["style"],
             )
             return result
         except Exception as e:
@@ -1685,7 +1729,8 @@ steps: 28
 
         # 清理 @ 提及（飞书消息格式："/meme gm @机器人" 或 "@机器人 /meme gm"）
         import re
-        text = re.sub(r'@[^\s]+', '', text).strip()
+
+        text = re.sub(r"@[^\s]+", "", text).strip()
 
         # 获取聊天 ID
         chat_id = message.get("chat_id")
@@ -1697,7 +1742,7 @@ steps: 28
             if text.startswith("/"):
                 # 斜杠命令模式
                 # 支持多行参数格式（用换行符分割）
-                lines = text.split('\n')
+                lines = text.split("\n")
                 first_line = lines[0].strip()
                 parts = first_line.split()
                 command = parts[0][1:]  # 去掉 /
@@ -1738,6 +1783,7 @@ steps: 28
 
                 # 获取图片文件名
                 from pathlib import Path
+
                 filename = Path(image_path).name
 
                 # 尝试发送卡片消息告知用户（如果有权限的话）
@@ -1748,7 +1794,7 @@ steps: 28
                         f"图片已生成：`{filename}`\n\n"
                         f"⚠️ 由于飞书 `im:resource` 权限审核中，暂时无法直接发送图片\n"
                         f"请联系管理员审核权限\n\n"
-                        f"本地路径：`{image_path}`"
+                        f"本地路径：`{image_path}`",
                     )
                     print(f"✅ 通知消息发送成功")
                 except Exception as msg_error:
@@ -1763,14 +1809,13 @@ steps: 28
         except Exception as e:
             print(f"❌ 处理失败: {e}")
             import traceback
+
             traceback.print_exc()
 
             # 发送错误消息
             try:
                 self.send_card_message(
-                    chat_id,
-                    "❌ 生成失败",
-                    f"错误: {str(e)}\n\n请检查命令格式"
+                    chat_id, "❌ 生成失败", f"错误: {str(e)}\n\n请检查命令格式"
                 )
             except:
                 pass
@@ -1828,7 +1873,9 @@ steps: 28
             try:
                 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
                 if not anthropic_key:
-                    error_msg = "❌ 缺少 ANTHROPIC_API_KEY 环境变量\n\n请配置 Claude API 密钥"
+                    error_msg = (
+                        "❌ 缺少 ANTHROPIC_API_KEY 环境变量\n\n请配置 Claude API 密钥"
+                    )
                     self.send_card_message(chat_id, "配置错误", error_msg)
                     return ""
 
@@ -1981,7 +2028,9 @@ steps: 28
                 else:
                     result_msg = f"✅ **发现 {len(mentions)} 条提及:**\n\n"
                     for i, mention in enumerate(mentions[:10], 1):  # 最多显示10条
-                        result_msg += f"{i}. @{mention['author']}: {mention['text'][:100]}...\n"
+                        result_msg += (
+                            f"{i}. @{mention['author']}: {mention['text'][:100]}...\n"
+                        )
                         result_msg += f"   优先级: {mention.get('priority', 0)}/100\n\n"
 
                 self.send_card_message(chat_id, "提及检测", result_msg)
@@ -2127,7 +2176,9 @@ steps: 28
                 text = " ".join(args[1:])
 
                 # 检查新鲜度
-                freshness_score = self.freshness_monitor.check_freshness(text, threshold=0.7)
+                freshness_score = self.freshness_monitor.check_freshness(
+                    text, threshold=0.7
+                )
 
                 # 判断结果
                 if freshness_score >= 0.7:
@@ -2223,7 +2274,7 @@ steps: 28
 
 **相似内容 (Top 5):**
 """
-                for i, similar in enumerate(analysis.get('similar_content', [])[:5], 1):
+                for i, similar in enumerate(analysis.get("similar_content", [])[:5], 1):
                     result_msg += f"{i}. 相似度: {similar['similarity']:.2f}\n"
                     result_msg += f"   内容: {similar['text'][:60]}...\n\n"
 
@@ -2258,11 +2309,11 @@ steps: 28
         bottom_text: str = "",
         font_style: str = "impact",
         all_caps: bool = True,
-        output_path: str = "output/lark/mcdonald_milady.png"
+        output_path: str = "output/lark/mcdonald_milady.png",
     ) -> str:
         """
         生成带有 McDonald 背景的 Milady NFT 图片
-        
+
         Args:
             nft_id: NFT ID，None 为随机
             layers: 图层配置
@@ -2271,73 +2322,77 @@ steps: 28
             font_style: 字体风格
             all_caps: 是否全大写
             output_path: 输出路径
-            
+
         Returns:
             生成的图片路径
         """
         from PIL import Image
         from pathlib import Path
         import random
-        
+
         # 1. 创建 McDonald 背景
         print("🍔 创建 McDonald 背景...")
         background = create_mcdonald_background(size=(1000, 1250))
-        
+
         # 2. 选择 NFT
         if nft_id is None:
             nft_dir = Path("assets/milady_nfts/images")
             nft_files = list(nft_dir.glob("milady_*.png"))
             if nft_files:
                 nft_file = random.choice(nft_files)
-                nft_id = int(nft_file.stem.split('_')[1])
+                nft_id = int(nft_file.stem.split("_")[1])
             else:
                 nft_id = random.randint(0, 9999)
-        
+
         print(f"🎨 使用 NFT #{nft_id}")
-        
+
         # 3. 加载 NFT
         nft_path = Path(f"assets/milady_nfts/images/milady_{nft_id}.png")
         if not nft_path.exists():
             raise FileNotFoundError(f"NFT #{nft_id} 不存在: {nft_path}")
-        
-        nft_img = Image.open(nft_path).convert('RGBA')
-        
+
+        nft_img = Image.open(nft_path).convert("RGBA")
+
         # 4. 合成 NFT 到背景上
         print("🖼️  合成 NFT 和背景...")
         composite = Image.alpha_composite(background, nft_img)
-        
+
         # 5. 叠加图层（如果有）
         if layers:
             from src.meme.milady_composer import MiladyComposer
+
             composer = MiladyComposer()
-            
+
             for category, image_names in layers.items():
                 if isinstance(image_names, str):
                     image_names = [image_names]
                 elif not isinstance(image_names, list):
                     continue
-                
+
                 for image_name in image_names:
                     layer_img = composer.load_layer(category, image_name)
                     if layer_img:
                         composite = Image.alpha_composite(composite, layer_img)
                         print(f"✅ 叠加 {category}: {image_name}")
-        
+
         # 6. 添加文字（如果有）
         if top_text or bottom_text:
             from src.meme.caption_meme import CaptionMeme
+
             caption = CaptionMeme()
             composite = caption.add_caption(
-                composite, top_text, bottom_text,
+                composite,
+                top_text,
+                bottom_text,
                 all_caps=all_caps,
-                font_style=font_style
+                font_style=font_style,
             )
-        
+
         # 7. 保存
         output_dir = Path(output_path).parent
         output_dir.mkdir(parents=True, exist_ok=True)
         composite.save(output_path)
-        
+
         print(f"✅ 图片已保存: {output_path}")
         return output_path
 
@@ -2472,6 +2527,7 @@ def create_lark_webhook_handler(bot: LarkMemeBot):
     Returns:
         处理函数
     """
+
     def handle_webhook(request_data: Dict) -> Dict:
         """
         处理飞书 Webhook 请求
@@ -2484,9 +2540,7 @@ def create_lark_webhook_handler(bot: LarkMemeBot):
         """
         # 事件验证
         if request_data.get("type") == "url_verification":
-            return {
-                "challenge": request_data.get("challenge")
-            }
+            return {"challenge": request_data.get("challenge")}
 
         # 消息事件
         if request_data.get("header", {}).get("event_type") == "im.message.receive_v1":
@@ -2507,10 +2561,7 @@ if __name__ == "__main__":
     from src.core.config import Config
 
     # 初始化机器人
-    bot = LarkMemeBot(
-        app_id=Config.LARK_APP_ID,
-        app_secret=Config.LARK_APP_SECRET
-    )
+    bot = LarkMemeBot(app_id=Config.LARK_APP_ID, app_secret=Config.LARK_APP_SECRET)
 
     # 测试生成梗图
     print("\n🧪 测试生成梗图...")

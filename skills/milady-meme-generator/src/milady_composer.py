@@ -30,13 +30,13 @@ class MiladyComposer:
 
     # 图层类别（可以叠加到 NFT 上的）
     OVERLAY_LAYERS = [
-        "Hat",           # 帽子（替换类）
-        "Glasses",       # 眼镜（叠加类）
-        "Earrings",      # 耳环（叠加类）
-        "Necklaces",     # 项链（叠加类）
+        "Hat",  # 帽子（替换类）
+        "Glasses",  # 眼镜（叠加类）
+        "Earrings",  # 耳环（叠加类）
+        "Necklaces",  # 项链（叠加类）
         "Face Decoration",  # 脸部装饰（叠加类）
-        "Mouth",         # 嘴部装饰（叠加类，如抽烟）
-        "Overlay"        # 特效叠加层（叠加类）
+        "Mouth",  # 嘴部装饰（叠加类，如抽烟）
+        "Overlay",  # 特效叠加层（叠加类）
     ]
 
     # 不应该叠加的图层（这些是 NFT 的基础部分）
@@ -50,13 +50,15 @@ class MiladyComposer:
         "Hair",
         "Shirt",
         "Brows",
-        "Neck"
+        "Neck",
     ]
 
-    def __init__(self,
-                 nft_dir: str = "assets/milady_nfts/images",
-                 layer_dir: str = "assets/milady_layers",
-                 config_path: str = "assets/milady_layers/layer_config.json"):
+    def __init__(
+        self,
+        nft_dir: str = "assets/milady_nfts/images",
+        layer_dir: str = "assets/milady_layers",
+        config_path: str = "assets/milady_layers/layer_config.json",
+    ):
         """
         初始化合成引擎
 
@@ -69,16 +71,14 @@ class MiladyComposer:
         self.layer_dir = Path(layer_dir)
 
         # 加载图层配置
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             config = json.load(f)
             self.layer_config = {
-                layer['name']: layer['images']
-                for layer in config['attributeLayers']
+                layer["name"]: layer["images"] for layer in config["attributeLayers"]
             }
             # 单独存储 z-index
             self.layer_z_index = {
-                layer['name']: layer.get('z', 0)
-                for layer in config['attributeLayers']
+                layer["name"]: layer.get("z", 0) for layer in config["attributeLayers"]
             }
 
         # 获取所有 NFT 列表
@@ -102,26 +102,29 @@ class MiladyComposer:
         """
         try:
             import requests
+
             url = f"https://www.miladymaker.net/milady/json/{nft_id}"
             response = requests.get(url, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 attributes = {}
-                for attr in data.get('attributes', []):
-                    trait_type = attr['trait_type']
-                    value = attr['value']
+                for attr in data.get("attributes", []):
+                    trait_type = attr["trait_type"]
+                    value = attr["value"]
                     # 跳过非图层属性
-                    if trait_type not in ['Drip Score', 'Core', 'Number']:
+                    if trait_type not in ["Drip Score", "Core", "Number"]:
                         attributes[trait_type] = value
                 return attributes
         except Exception as e:
             print(f"⚠️  无法获取 NFT #{nft_id} 的属性: {e}")
         return None
 
-    def compose_with_replacement(self,
-                                 nft_id: int,
-                                 replacements: Optional[Union[Dict[str, str], Dict[str, List[str]]]] = None,
-                                 output_size: Tuple[int, int] = (1000, 1250)) -> Optional[Image.Image]:
+    def compose_with_replacement(
+        self,
+        nft_id: int,
+        replacements: Optional[Union[Dict[str, str], Dict[str, List[str]]]] = None,
+        output_size: Tuple[int, int] = (1000, 1250),
+    ) -> Optional[Image.Image]:
         """
         基于 NFT 元数据重新合成，支持图层替换和新增
 
@@ -162,14 +165,17 @@ class MiladyComposer:
             "Glasses": "Glasses",
             "Earrings": "Earrings",
             "Necklaces": "Necklaces",
-            "Face Decoration": "Face Decoration"
+            "Face Decoration": "Face Decoration",
         }
 
         # 1. 添加 NFT 元数据中的图层
         for api_name, layer_category in category_mapping.items():
             if api_name in attributes:
                 # 检查是否需要替换这个图层
-                if normalized_replacements and layer_category in normalized_replacements:
+                if (
+                    normalized_replacements
+                    and layer_category in normalized_replacements
+                ):
                     # 使用替换的图层（可能有多个）
                     for layer_file in normalized_replacements[layer_category]:
                         print(f"🔄 替换 {layer_category}: {layer_file}")
@@ -197,7 +203,9 @@ class MiladyComposer:
             if normalized_replacements and category in normalized_replacements:
                 for layer_file in normalized_replacements[category]:
                     print(f"🔄 替换 {category}: {layer_file}")
-                    z_index = self.layer_z_index.get(category, 5)  # Mouth/Brows 在中间层
+                    z_index = self.layer_z_index.get(
+                        category, 5
+                    )  # Mouth/Brows 在中间层
                     layers_to_compose.append((z_index, category, layer_file))
             else:
                 # 使用默认值
@@ -209,7 +217,9 @@ class MiladyComposer:
         extra_categories = ["Overlay"]  # 可叠加但不在 NFT 元数据中的类别
         for category in extra_categories:
             if normalized_replacements and category in normalized_replacements:
-                z_index = self.layer_z_index.get(category, 100)  # Overlay 默认 z-index 很高
+                z_index = self.layer_z_index.get(
+                    category, 100
+                )  # Overlay 默认 z-index 很高
                 for layer_file in normalized_replacements[category]:
                     print(f"➕ 新增 {category}: {layer_file}")
                     layers_to_compose.append((z_index, category, layer_file))
@@ -251,7 +261,7 @@ class MiladyComposer:
             return None
 
         try:
-            img = Image.open(nft_path).convert('RGBA')
+            img = Image.open(nft_path).convert("RGBA")
             return img
         except Exception as e:
             print(f"❌ 加载 NFT #{nft_id} 失败: {e}")
@@ -276,7 +286,7 @@ class MiladyComposer:
 
         try:
             # 加载图层（2000x2500）
-            layer = Image.open(layer_path).convert('RGBA')
+            layer = Image.open(layer_path).convert("RGBA")
 
             # 缩放到 NFT 尺寸（1000x1250）
             layer_resized = layer.resize(self.NFT_SIZE, Image.Resampling.LANCZOS)
@@ -287,7 +297,9 @@ class MiladyComposer:
             print(f"❌ 加载图层失败 {category}/{image_name}: {e}")
             return None
 
-    def _normalize_layers(self, layers: Optional[Union[Dict[str, str], Dict[str, List[str]]]]) -> Dict[str, List[str]]:
+    def _normalize_layers(
+        self, layers: Optional[Union[Dict[str, str], Dict[str, List[str]]]]
+    ) -> Dict[str, List[str]]:
         """
         统一图层格式为 Dict[str, List[str]]
 
@@ -313,11 +325,13 @@ class MiladyComposer:
 
         return normalized
 
-    def compose_from_scratch(self,
-                            skin: str = "Pale.png",
-                            background: str = "XP.png",
-                            layers: Optional[Union[Dict[str, str], Dict[str, List[str]]]] = None,
-                            output_size: Tuple[int, int] = (1000, 1250)) -> Optional[Image.Image]:
+    def compose_from_scratch(
+        self,
+        skin: str = "Pale.png",
+        background: str = "XP.png",
+        layers: Optional[Union[Dict[str, str], Dict[str, List[str]]]] = None,
+        output_size: Tuple[int, int] = (1000, 1250),
+    ) -> Optional[Image.Image]:
         """
         从基础图层开始合成（图层替换模式）
 
@@ -336,7 +350,7 @@ class MiladyComposer:
         bg_layer = self.load_layer("Background", background)
         if bg_layer is None:
             # 如果背景加载失败，使用纯色背景
-            canvas = Image.new('RGBA', self.NFT_SIZE, (200, 200, 200, 255))
+            canvas = Image.new("RGBA", self.NFT_SIZE, (200, 200, 200, 255))
         else:
             canvas = bg_layer
 
@@ -362,10 +376,12 @@ class MiladyComposer:
 
         return canvas
 
-    def compose(self,
-                nft_id: Optional[int] = None,
-                layers: Optional[Union[Dict[str, str], Dict[str, List[str]]]] = None,
-                output_size: Tuple[int, int] = (1000, 1250)) -> Optional[Image.Image]:
+    def compose(
+        self,
+        nft_id: Optional[int] = None,
+        layers: Optional[Union[Dict[str, str], Dict[str, List[str]]]] = None,
+        output_size: Tuple[int, int] = (1000, 1250),
+    ) -> Optional[Image.Image]:
         """
         合成 Milady 图片
 
@@ -430,10 +446,12 @@ class MiladyComposer:
 
         return canvas
 
-    def compose_random(self,
-                       nft_id: Optional[int] = None,
-                       num_layers: int = 2,
-                       output_size: Tuple[int, int] = (1000, 1250)) -> Optional[Image.Image]:
+    def compose_random(
+        self,
+        nft_id: Optional[int] = None,
+        num_layers: int = 2,
+        output_size: Tuple[int, int] = (1000, 1250),
+    ) -> Optional[Image.Image]:
         """
         随机合成 Milady（随机选择图层）
 
@@ -447,8 +465,7 @@ class MiladyComposer:
         """
         # 随机选择要叠加的图层类别
         selected_categories = random.sample(
-            self.OVERLAY_LAYERS,
-            min(num_layers, len(self.OVERLAY_LAYERS))
+            self.OVERLAY_LAYERS, min(num_layers, len(self.OVERLAY_LAYERS))
         )
 
         # 为每个类别随机选择一个图层
@@ -472,13 +489,15 @@ class MiladyComposer:
         """
         return self.layer_config.get(category, [])
 
-    def create_meme(self,
-                    nft_id: Optional[int] = None,
-                    layers: Optional[Dict[str, str]] = None,
-                    top_text: str = "",
-                    bottom_text: str = "",
-                    all_caps: bool = True,
-                    output_path: Optional[str] = None) -> Optional[str]:
+    def create_meme(
+        self,
+        nft_id: Optional[int] = None,
+        layers: Optional[Dict[str, str]] = None,
+        top_text: str = "",
+        bottom_text: str = "",
+        all_caps: bool = True,
+        output_path: Optional[str] = None,
+    ) -> Optional[str]:
         """
         创建带文字的 Milady Meme
 
@@ -500,6 +519,7 @@ class MiladyComposer:
         # 如果有文字，使用 CaptionMeme 添加
         if top_text or bottom_text:
             from .caption_meme import CaptionMeme
+
             caption = CaptionMeme()
             img = caption.add_caption(img, top_text, bottom_text, all_caps=all_caps)
 
@@ -522,16 +542,12 @@ def main():
 
     composer = MiladyComposer()
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 测试 1: 使用 NFT #0，添加帽子和眼镜")
-    print("="*60)
+    print("=" * 60)
 
     img1 = composer.compose(
-        nft_id=0,
-        layers={
-            "Hat": "Cowboy Hat.png",
-            "Glasses": "Heart Glasses.png"
-        }
+        nft_id=0, layers={"Hat": "Cowboy Hat.png", "Glasses": "Heart Glasses.png"}
     )
 
     if img1:
@@ -539,9 +555,9 @@ def main():
         img1.save(output_path)
         print(f"✅ 保存到: {output_path}")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 测试 2: 随机 NFT + 随机图层")
-    print("="*60)
+    print("=" * 60)
 
     img2 = composer.compose_random(num_layers=3)
 
@@ -550,15 +566,15 @@ def main():
         img2.save(output_path)
         print(f"✅ 保存到: {output_path}")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 测试 3: 创建带文字的 Meme")
-    print("="*60)
+    print("=" * 60)
 
     output_path = composer.create_meme(
         nft_id=100,
         layers={"Hat": "Pink Bonnet.png", "Overlay": "Heart Meme.png"},
         top_text="GM BUILDERS",
-        bottom_text="LFG"
+        bottom_text="LFG",
     )
 
     print("\n✅ 所有测试完成！")

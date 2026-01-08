@@ -33,19 +33,16 @@ class MemegenAPI:
         "出轨": "db",
         "气球": "balloon",  # Running Away Balloon
         "两个都要": "both",  # Why Not Both?
-
         # 反应/情绪类
         "这很好": "fine",  # This is fine (着火的狗)
         "着火": "fine",
         "懵逼": "surprised",  # 惊讶
         "恐惧": "afraid",  # Afraid to Ask
-
         # 陈述/真相类
         "蜘蛛侠": "spiderman",  # 两个蜘蛛侠互指
         "指认": "spiderman",
         "古代外星人": "aag",  # Ancient Aliens Guy
         "外星人": "aag",
-
         # 经典梗图
         "一个不留": "oprah",  # 奥普拉：你得到，你也得到
         "奥普拉": "oprah",
@@ -53,12 +50,10 @@ class MemegenAPI:
         "无处不在": "buzz",
         "一直都是": "astronaut",  # Always Has Been
         "宇航员": "astronaut",
-
         # 动物类
         "坏运": "blb",  # Bad Luck Brian
         "社恐": "awkward",  # Socially Awkward Penguin
         "买船猫": "boat",  # I Should Buy a Boat Cat
-
         # 其他
         "我不总是": "iw",  # The Most Interesting Man
         "为什么不": "both",  # Why Not Both
@@ -101,16 +96,16 @@ class MemegenAPI:
         """
         import urllib.parse
 
-        text = text.replace(' ', '_')
-        text = text.replace('\n', '~n')
-        text = text.replace('?', '~q')
-        text = text.replace('%', '~p')
-        text = text.replace('#', '~h')
-        text = text.replace('/', '~s')
+        text = text.replace(" ", "_")
+        text = text.replace("\n", "~n")
+        text = text.replace("?", "~q")
+        text = text.replace("%", "~p")
+        text = text.replace("#", "~h")
+        text = text.replace("/", "~s")
         text = text.replace("'", "''")
 
         # URL encode（处理中文等特殊字符）
-        text = urllib.parse.quote(text, safe='_~')
+        text = urllib.parse.quote(text, safe="_~")
 
         return text
 
@@ -128,7 +123,7 @@ class MemegenAPI:
         style: Optional[str] = None,
         layout: Optional[str] = None,
         background: Optional[str] = None,
-        color: Optional[str] = None
+        color: Optional[str] = None,
     ) -> str:
         """
         生成梗图（支持高级功能）
@@ -161,7 +156,9 @@ class MemegenAPI:
         bottom_encoded = self._encode_text(bottom_text) if bottom_text else "_"
 
         # 构建基础 URL
-        url = f"{self.BASE_URL}/images/{template}/{top_encoded}/{bottom_encoded}.{format}"
+        url = (
+            f"{self.BASE_URL}/images/{template}/{top_encoded}/{bottom_encoded}.{format}"
+        )
 
         # 添加查询参数
         params = []
@@ -212,7 +209,7 @@ class MemegenAPI:
         template: str,
         lines: List[str],
         output_path: Optional[str] = None,
-        format: str = "png"
+        format: str = "png",
     ) -> str:
         """
         生成多行文字梗图
@@ -263,9 +260,9 @@ def main():
     """测试函数"""
     api = MemegenAPI()
 
-    print("="*70)
+    print("=" * 70)
     print("🧪 测试 Memegen.link API")
-    print("="*70)
+    print("=" * 70)
     print()
 
     # 测试 1: Drake 模板
@@ -274,7 +271,7 @@ def main():
         template="drake",
         top_text="使用复杂的 AI API",
         bottom_text="使用免费的 memegen.link",
-        output_path="output/test_memegen_drake.png"
+        output_path="output/test_memegen_drake.png",
     )
     print()
 
@@ -284,7 +281,7 @@ def main():
         template="分心男友",
         top_text="Replicate (要钱)",
         bottom_text="Memegen (免费)",
-        output_path="output/test_memegen_distracted.png"
+        output_path="output/test_memegen_distracted.png",
     )
     print()
 
@@ -294,7 +291,7 @@ def main():
         template="fine",
         top_text="Replicate 余额还没到账",
         bottom_text="This is fine",
-        output_path="output/test_memegen_fine.png"
+        output_path="output/test_memegen_fine.png",
     )
     print()
 
@@ -304,13 +301,13 @@ def main():
         template="到处都是",
         top_text="Meme templates",
         bottom_text="Meme templates everywhere",
-        output_path="output/test_memegen_everywhere.png"
+        output_path="output/test_memegen_everywhere.png",
     )
     print()
 
-    print("="*70)
+    print("=" * 70)
     print("🎉 所有测试完成！")
-    print("="*70)
+    print("=" * 70)
     print("\n生成的文件：")
     print("  - output/test_memegen_drake.png")
     print("  - output/test_memegen_distracted.png")

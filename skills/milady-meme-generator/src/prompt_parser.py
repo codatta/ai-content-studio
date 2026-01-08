@@ -14,17 +14,35 @@ class PromptParser:
     # 模板关键词映射
     TEMPLATE_KEYWORDS = {
         "gm": ["gm", "早安", "good morning", "goodmorning", "建设者", "builders"],
-        "crypto": ["crypto", "加密", "币圈", "moon", "钻石手", "diamond hands", "bullish"],
+        "crypto": [
+            "crypto",
+            "加密",
+            "币圈",
+            "moon",
+            "钻石手",
+            "diamond hands",
+            "bullish",
+        ],
         "milady": ["milady", "米拉迪", "remilia", "网络灵性", "数字民俗"],
-        "motivational": ["励志", "鸡汤", "motivational", "打气", "坚持"]
+        "motivational": ["励志", "鸡汤", "motivational", "打气", "坚持"],
     }
 
     # 字体风格关键词
     FONT_KEYWORDS = {
         "impact": ["impact", "经典", "粗体", "传统"],
-        "glow": ["glow", "发光", "赛博", "cyberpunk", "霓虹", "neon", "未来城市", "未来", "futuristic"],
+        "glow": [
+            "glow",
+            "发光",
+            "赛博",
+            "cyberpunk",
+            "霓虹",
+            "neon",
+            "未来城市",
+            "未来",
+            "futuristic",
+        ],
         "angelic": ["angelic", "优雅", "天使", "elegant"],
-        "chinese": ["中文", "chinese", "汉字"]
+        "chinese": ["中文", "chinese", "汉字"],
     }
 
     # 图层类别关键词（通用的，只在没有匹配到具体图层时使用）
@@ -34,7 +52,12 @@ class PromptParser:
         "Earrings": ["耳环", "earrings", "耳饰"],
         "Necklaces": ["项链", "necklace", "necklaces", "颈链"],
         "Face Decoration": ["脸部装饰", "face decoration", "面部", "贴纸"],
-        "Overlay": ["特效", "overlay", "叠加", "效果"]  # 移除"爱心"、"星星"，使用具体名称
+        "Overlay": [
+            "特效",
+            "overlay",
+            "叠加",
+            "效果",
+        ],  # 移除"爱心"、"星星"，使用具体名称
     }
 
     # 常用图层文件映射
@@ -48,14 +71,12 @@ class PromptParser:
         "熊帽": "Hat:Bear Hat.png",
         "蛋糕帽": "Hat:Cake Hat.png",
         "光环": "Hat:Halo.png",
-
         # 眼镜
         "墨镜": "Glasses:Sunglasses.png",
         "圆框眼镜": "Glasses:Round Glasses.png",
         "prescription眼镜": "Glasses:Prescription Glasses.png",
         "cobain眼镜": "Glasses:Cobain Glasses.png",
         "harajuku眼镜": "Glasses:Harajuku Glasses.png",
-
         # 特效叠加层
         "爱心": "Overlay:Heart Meme.png",
         "星星": "Overlay:Stars.png",
@@ -82,7 +103,6 @@ class PromptParser:
         "麦当劳打工": "Overlay:McDonald_Badge.png",
         "在麦当劳打工": "Overlay:McDonald_Badge.png",
         "麦当劳员工": "Overlay:McDonald_Badge.png",
-
         # 嘴部装饰（Mouth 类别，不是 Overlay）
         "抽烟": "Mouth:Smoking.png",
         "叼烟": "Mouth:Smoking.png",
@@ -97,18 +117,15 @@ class PromptParser:
         # Liminal Space 风格
         "liminal": ["liminal", "liminal space", "边缘空间", "过渡空间"],
         "illusion": ["illusion", "幻觉", "错觉"],
-
         # 艺术风格
         "vaporwave": ["vaporwave", "蒸汽波", "赛博"],
         "retrowave": ["retrowave", "复古波", "80年代"],
         "cyberpunk": ["cyberpunk", "赛博朋克", "未来主义"],
         "glitch": ["glitch", "故障", "故障艺术"],
-
         # 光影效果
         "neon": ["neon", "霓虹", "发光"],
         "glow": ["glow", "发光", "辉光"],
         "bokeh": ["bokeh", "散景", "虚化"],
-
         # 氛围
         "dreamy": ["dreamy", "梦幻", "如梦似幻"],
         "nostalgic": ["nostalgic", "怀旧", "复古"],
@@ -117,7 +134,15 @@ class PromptParser:
 
     # 自定义背景关键词
     BACKGROUND_KEYWORDS = {
-        "mcdonald": ["mcdonald", "麦当劳", "mcdonalds", "mcd", "麦当劳背景", "mcdonald背景", "mcdonald标志"]
+        "mcdonald": [
+            "mcdonald",
+            "麦当劳",
+            "mcdonalds",
+            "mcd",
+            "麦当劳背景",
+            "mcdonald背景",
+            "mcdonald标志",
+        ]
     }
 
     def __init__(self):
@@ -176,7 +201,9 @@ class PromptParser:
 
         # 8. 检测是否需要 Prompt Enhancer
         # 如果有视觉风格描述，或者是纯自然语言描述（无模板），启用 Prompt Enhancer
-        if params["visual_styles"] or (not params["template"] and not params["top_text"]):
+        if params["visual_styles"] or (
+            not params["template"] and not params["top_text"]
+        ):
             params["use_prompt_enhancer"] = True
 
         # 9. 解析自定义背景
@@ -200,11 +227,11 @@ class PromptParser:
         """解析 NFT ID"""
         # 匹配 #数字 或 NFT 数字 或 nft 数字
         patterns = [
-            r'#(\d+)',
-            r'nft[:\s]+(\d+)',
-            r'NFT[:\s]+(\d+)',
-            r'编号[:\s]*(\d+)',
-            r'id[:\s]*(\d+)',
+            r"#(\d+)",
+            r"nft[:\s]+(\d+)",
+            r"NFT[:\s]+(\d+)",
+            r"编号[:\s]*(\d+)",
+            r"id[:\s]*(\d+)",
         ]
 
         for pattern in patterns:
@@ -223,10 +250,13 @@ class PromptParser:
         返回格式: {"Overlay": ["Gunpoint.png", "Birthday Hat.png"], "Hat": ["Beret.png"]}
         """
         from collections import defaultdict
+
         layers = defaultdict(list)
 
         # 1. 先检查常用图层的中文名称（按长度排序，优先匹配更具体的关键词）
-        sorted_layers = sorted(self.COMMON_LAYERS.items(), key=lambda x: len(x[0]), reverse=True)
+        sorted_layers = sorted(
+            self.COMMON_LAYERS.items(), key=lambda x: len(x[0]), reverse=True
+        )
         matched_keywords = set()  # 避免重复匹配
 
         for layer_name, layer_path in sorted_layers:
@@ -240,11 +270,15 @@ class PromptParser:
         # 2. 检查图层类别关键词（只在没有匹配到具体图层时设置默认）
         # 使用单词边界匹配，避免 "cap" 匹配到 "caption"
         import re
+
         for category, keywords in self.LAYER_KEYWORDS.items():
             for keyword in keywords:
                 # 使用 \b 单词边界，确保只匹配完整单词
-                pattern = r'\b' + re.escape(keyword) + r'\b'
-                if re.search(pattern, prompt_lower, re.IGNORECASE) and not layers[category]:
+                pattern = r"\b" + re.escape(keyword) + r"\b"
+                if (
+                    re.search(pattern, prompt_lower, re.IGNORECASE)
+                    and not layers[category]
+                ):
                     # 找到了类别但没有具体图层，设置默认图层
                     if category == "Hat":
                         layers[category].append("Beret.png")  # 默认贝雷帽
@@ -277,7 +311,7 @@ class PromptParser:
             r'上文字[：:]\s*["""]([^"""]+)["""]',
             r'下文字[：:]\s*["""]([^"""]+)["""]',
             r'文字[配]?[：:]\s*["""]([^"""]+)["""]',
-            r'caption[：:\s]+写?([^\n，。！？,]+)',  # 新增：匹配 "caption 写$XNY = $1"
+            r"caption[：:\s]+写?([^\n，。！？,]+)",  # 新增：匹配 "caption 写$XNY = $1"
             r'顶部[：:]\s*["""]([^"""]+)["""]',
             r'底部[：:]\s*["""]([^"""]+)["""]',
         ]
@@ -300,9 +334,9 @@ class PromptParser:
         if not top_text:
             # 匹配 "文字跟 X、Y、Z 有关" 或 "文字包含 X、Y、Z"
             nl_patterns = [
-                r'文字跟\s*([^，。！？,]+?)\s*有关',
-                r'文字包含\s*([^，。！？,]+)',
-                r'写.*?([0-9]+.*?[A-Za-z\u4e00-\u9fff]+)',  # 匹配 "2026 Happy New Year" 这种
+                r"文字跟\s*([^，。！？,]+?)\s*有关",
+                r"文字包含\s*([^，。！？,]+)",
+                r"写.*?([0-9]+.*?[A-Za-z\u4e00-\u9fff]+)",  # 匹配 "2026 Happy New Year" 这种
             ]
 
             for pattern in nl_patterns:
@@ -311,7 +345,7 @@ class PromptParser:
                     # 提取关键词并组合
                     keywords_str = match.group(1)
                     # 分割、、和、
-                    keywords = re.split(r'[、,，]+', keywords_str)
+                    keywords = re.split(r"[、,，]+", keywords_str)
                     # 过滤空字符串并清理
                     keywords = [k.strip() for k in keywords if k.strip()]
 
@@ -333,7 +367,7 @@ class PromptParser:
                             # 三个或以上，前面几个合并到上行，最后的放下行
                             # 例如 ["2026", "Happy New Year", "keep building"]
                             # → top: "2026 HAPPY NEW YEAR", bottom: "KEEP BUILDING"
-                            top_text = ' '.join(keywords[:-1]).upper()
+                            top_text = " ".join(keywords[:-1]).upper()
                             bottom_text = keywords[-1].upper()
                         break
 
@@ -342,7 +376,10 @@ class PromptParser:
     def _parse_caps_option(self, prompt_lower: str) -> bool:
         """解析大小写选项"""
         # 如果提到保持小写、不要大写等，返回 False
-        if any(keyword in prompt_lower for keyword in ["小写", "不要大写", "保持原样", "lowercase"]):
+        if any(
+            keyword in prompt_lower
+            for keyword in ["小写", "不要大写", "保持原样", "lowercase"]
+        ):
             return False
         return True
 
@@ -673,7 +710,7 @@ if __name__ == "__main__":
     for i, prompt in enumerate(test_prompts, 1):
         print(f"\n{'='*70}")
         print(f"测试 {i}: {prompt}")
-        print('='*70)
+        print("=" * 70)
         result = parser.parse(prompt)
         print(f"✅ 解析结果:")
         for key, value in result.items():
@@ -682,7 +719,7 @@ if __name__ == "__main__":
         print()
 
     # 打印风格指南
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📖 风格指南")
-    print("="*70)
+    print("=" * 70)
     print(parser.get_style_guide())

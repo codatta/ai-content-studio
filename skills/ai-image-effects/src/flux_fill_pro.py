@@ -21,36 +21,27 @@ class FluxFillPro:
     ACCESSORY_REGIONS = {
         "hat": {
             "region": (100, 30, 300, 180),  # (x, y, width, height)
-            "description": "帽子区域（头顶）"
+            "description": "帽子区域（头顶）",
         },
-        "glasses": {
-            "region": (150, 170, 200, 90),
-            "description": "眼镜区域（眼睛）"
-        },
+        "glasses": {"region": (150, 170, 200, 90), "description": "眼镜区域（眼睛）"},
         "earrings": {
             "region": (80, 210, 120, 100),  # 左耳
-            "description": "耳环区域（左耳）"
+            "description": "耳环区域（左耳）",
         },
         "earrings_right": {
             "region": (300, 210, 120, 100),  # 右耳
-            "description": "耳环区域（右耳）"
+            "description": "耳环区域（右耳）",
         },
-        "necklace": {
-            "region": (160, 340, 180, 100),
-            "description": "项链区域（脖子）"
-        },
+        "necklace": {"region": (160, 340, 180, 100), "description": "项链区域（脖子）"},
         "scarf": {
             "region": (140, 360, 220, 140),  # 围巾（颈部+肩部）
-            "description": "围巾区域（颈部和肩部）"
+            "description": "围巾区域（颈部和肩部）",
         },
-        "clothes": {
-            "region": (120, 380, 260, 120),
-            "description": "衣服区域（上身）"
-        },
+        "clothes": {"region": (120, 380, 260, 120), "description": "衣服区域（上身）"},
         "other": {
             "region": (50, 50, 400, 400),  # 全图区域（用于 overlay 等）
-            "description": "通用区域（全图）"
-        }
+            "description": "通用区域（全图）",
+        },
     }
 
     def __init__(self, api_token: Optional[str] = None, use_sam: bool = False):
@@ -95,7 +86,7 @@ class FluxFillPro:
         self,
         image_size: Tuple[int, int],
         region: Tuple[int, int, int, int],
-        feather: int = 10
+        feather: int = 10,
     ) -> Image.Image:
         """
         创建遮罩图像
@@ -109,7 +100,7 @@ class FluxFillPro:
             遮罩图像（白色=要修改的区域，黑色=保留的区域）
         """
         width, height = image_size
-        mask = Image.new('L', (width, height), 0)  # 黑色背景
+        mask = Image.new("L", (width, height), 0)  # 黑色背景
         draw = ImageDraw.Draw(mask)
 
         x, y, w, h = region
@@ -120,6 +111,7 @@ class FluxFillPro:
         # 可选：添加羽化效果（使用 PIL 的 filter）
         if feather > 0:
             from PIL import ImageFilter
+
             mask = mask.filter(ImageFilter.GaussianBlur(radius=feather))
 
         return mask
@@ -133,7 +125,7 @@ class FluxFillPro:
         guidance: float = 30.0,
         num_inference_steps: int = 28,
         custom_region: Optional[Tuple[int, int, int, int]] = None,
-        force_sam: Optional[bool] = None
+        force_sam: Optional[bool] = None,
     ) -> str:
         """
         替换配饰
@@ -182,7 +174,7 @@ class FluxFillPro:
             region = self.sam_detector.detect_accessory(
                 image_path=image_path,
                 accessory_type=accessory_type,
-                predefined_region=predefined
+                predefined_region=predefined,
             )
             if region is None:
                 raise ValueError(f"SAM 未能检测到 {accessory_type}，且无预定义区域")
@@ -190,7 +182,9 @@ class FluxFillPro:
             region = self.ACCESSORY_REGIONS[accessory_type]["region"]
             print(f"   使用预定义区域: {region}")
         else:
-            raise ValueError(f"未知的配饰类型: {accessory_type}。支持: {list(self.ACCESSORY_REGIONS.keys())}")
+            raise ValueError(
+                f"未知的配饰类型: {accessory_type}。支持: {list(self.ACCESSORY_REGIONS.keys())}"
+            )
 
         # 创建遮罩
         mask = self.create_mask(image_size, region, feather=5)
@@ -214,8 +208,8 @@ class FluxFillPro:
                     "guidance": guidance,
                     "num_inference_steps": num_inference_steps,
                     "output_format": "png",
-                    "output_quality": 100
-                }
+                    "output_quality": 100,
+                },
             )
 
             # FLUX Fill Pro 返回 URL
@@ -242,10 +236,7 @@ class FluxFillPro:
             raise
 
     def batch_replace(
-        self,
-        image_path: str,
-        replacements: Dict[str, str],
-        output_path: str
+        self, image_path: str, replacements: Dict[str, str], output_path: str
     ) -> str:
         """
         批量替换多个配饰
@@ -281,7 +272,7 @@ class FluxFillPro:
                 image_path=current_image,
                 accessory_type=accessory_type,
                 new_description=description,
-                output_path=temp_output
+                output_path=temp_output,
             )
 
             current_image = temp_output
@@ -296,11 +287,7 @@ class FluxFillPro:
 
         return output_path
 
-    def visualize_regions(
-        self,
-        image_path: str,
-        output_path: str
-    ) -> str:
+    def visualize_regions(self, image_path: str, output_path: str) -> str:
         """
         可视化所有预定义配饰区域（调试用）
 

@@ -25,13 +25,13 @@ class PromptEnhancer:
         """
         # 尝试从多个环境变量读取
         self.api_key = (
-            api_key or
-            os.getenv("ANTHROPIC_API_KEY") or
-            os.getenv("CLAUDE_API_KEY")
+            api_key or os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
         )
 
         if not self.api_key:
-            print("⚠️ 警告: 未设置 ANTHROPIC_API_KEY 或 CLAUDE_API_KEY，Prompt Enhancer 将不可用")
+            print(
+                "⚠️ 警告: 未设置 ANTHROPIC_API_KEY 或 CLAUDE_API_KEY，Prompt Enhancer 将不可用"
+            )
             print("💡 设置方法: export ANTHROPIC_API_KEY='your-api-key'")
             print("   或: export CLAUDE_API_KEY='your-api-key'")
             self.client = None
@@ -40,10 +40,7 @@ class PromptEnhancer:
             print("✅ Prompt Enhancer 已初始化")
 
     def enhance(
-        self,
-        prompt: str,
-        bypass: bool = False,
-        context: str = "milady meme"
+        self, prompt: str, bypass: bool = False, context: str = "milady meme"
     ) -> str:
         """
         增强提示词
@@ -68,7 +65,9 @@ class PromptEnhancer:
 
         # 检查长度
         if len(prompt) > self.MAX_LENGTH_FOR_ENHANCEMENT:
-            print(f"📏 提示词长度 ({len(prompt)}) 超过 {self.MAX_LENGTH_FOR_ENHANCEMENT}，跳过增强")
+            print(
+                f"📏 提示词长度 ({len(prompt)}) 超过 {self.MAX_LENGTH_FOR_ENHANCEMENT}，跳过增强"
+            )
             return prompt
 
         # 检查客户端
@@ -113,12 +112,7 @@ class PromptEnhancer:
             max_tokens=500,
             temperature=0.7,
             system=system_prompt,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Enhance this prompt: {prompt}"
-                }
-            ]
+            messages=[{"role": "user", "content": f"Enhance this prompt: {prompt}"}],
         )
 
         # 提取响应

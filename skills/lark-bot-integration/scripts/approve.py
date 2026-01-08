@@ -5,7 +5,8 @@ from src.storage.database import Database
 from src.twitter.client import TwitterClient
 from src.core.logger import setup_logger
 
-logger = setup_logger('approve')
+logger = setup_logger("approve")
+
 
 def main():
     if len(sys.argv) < 2:
@@ -14,17 +15,17 @@ def main():
         sys.exit(1)
 
     action = sys.argv[1]
-    
+
     db = Database()
-    
+
     if action == "list":
         # 列出所有待审核
         pending = db.get_pending_approvals()
-        
+
         if not pending:
             print("✅ No pending approvals")
             return
-        
+
         print(f"\n📋 Pending Approvals ({len(pending)}):\n")
         for tweet in pending:
             print(f"ID: {tweet.id}")
@@ -34,7 +35,7 @@ def main():
             print(f"Original: {tweet.text[:100]}...")
             print(f"Reply: {tweet.suggested_reply}")
             print("-" * 50)
-        
+
         return
 
     if len(sys.argv) < 3:
@@ -49,36 +50,34 @@ def main():
         session = db.get_session()
         try:
             from src.storage.models import Tweet
+
             tweet = session.query(Tweet).filter(Tweet.id == tweet_id).first()
-            
+
             if not tweet:
                 print(f"❌ Tweet {tweet_id} not found")
                 return
-            
-            if tweet.approval_status != 'pending':
+
+            if tweet.approval_status != "pending":
                 print(f"⚠️  Tweet {tweet_id} status: {tweet.approval_status}")
                 return
-            
+
             # 发送推文
             twitter = TwitterClient()
-            success = twitter.post_tweet(
-                text=tweet.suggested_reply,
-                reply_to=tweet_id
-            )
-            
+            success = twitter.post_tweet(text=tweet.suggested_reply, reply_to=tweet_id)
+
             if success:
-                db.update_approval_status(tweet_id, 'approved')
-                db.mark_as_posted(tweet_id, 'posted')
+                db.update_approval_status(tweet_id, "approved")
+                db.mark_as_posted(tweet_id, "posted")
                 print(f"✅ Tweet {tweet_id} approved and posted!")
             else:
                 print(f"❌ Failed to post tweet")
-                
+
         finally:
             session.close()
-    
+
     elif action == "reject":
         # 拒绝
-        db.update_approval_status(tweet_id, 'rejected')
+        db.update_approval_status(tweet_id, "rejected")
         print(f"❌ Tweet {tweet_id} rejected")
 
     elif action == "edit":
@@ -86,6 +85,7 @@ def main():
         session = db.get_session()
         try:
             from src.storage.models import Tweet
+
             tweet = session.query(Tweet).filter(Tweet.id == tweet_id).first()
 
             if not tweet:
@@ -136,6 +136,7 @@ def main():
     else:
         print(f"Unknown action: {action}")
         print("Valid actions: approve, reject, edit, list")
+
 
 if __name__ == "__main__":
     main()

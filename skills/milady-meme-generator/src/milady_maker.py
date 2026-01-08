@@ -16,22 +16,22 @@ class MiladyMaker:
 
     # 图层 z-index 顺序（从下到上）
     LAYER_ORDER = [
-        "Background",      # z=0
-        "Skin",           # z=1
-        "Face",           # z=2
-        "Eyes",           # z=3
-        "Eye Color",      # z=4
-        "Mouth",          # z=4
-        "Neck",           # z=5
-        "Necklaces",      # z=5
-        "Shirt",          # z=6
-        "Hair",           # z=7
-        "Brows",          # z=8
-        "Earrings",       # z=9
-        "Face Decoration", # z=10
-        "Glasses",        # z=10
-        "Hat",            # z=11
-        "Overlay",        # z=13
+        "Background",  # z=0
+        "Skin",  # z=1
+        "Face",  # z=2
+        "Eyes",  # z=3
+        "Eye Color",  # z=4
+        "Mouth",  # z=4
+        "Neck",  # z=5
+        "Necklaces",  # z=5
+        "Shirt",  # z=6
+        "Hair",  # z=7
+        "Brows",  # z=8
+        "Earrings",  # z=9
+        "Face Decoration",  # z=10
+        "Glasses",  # z=10
+        "Hat",  # z=11
+        "Overlay",  # z=13
     ]
 
     # 必需图层（必须有的属性）
@@ -104,7 +104,7 @@ class MiladyMaker:
     def create_milady(
         self,
         attributes: Optional[Dict[str, str]] = None,
-        output_size: tuple = (1000, 1000)
+        output_size: tuple = (1000, 1000),
     ) -> Image.Image:
         """
         创建 Milady 图像
@@ -122,7 +122,7 @@ class MiladyMaker:
             attributes = self.generate_random_attributes()
 
         # 创建空白画布
-        canvas = Image.new('RGBA', output_size, (0, 0, 0, 0))
+        canvas = Image.new("RGBA", output_size, (0, 0, 0, 0))
 
         # 按 z-index 顺序合成图层
         for layer_name in self.LAYER_ORDER:
@@ -138,7 +138,7 @@ class MiladyMaker:
 
             try:
                 # 加载图层
-                layer_img = Image.open(layer_path).convert('RGBA')
+                layer_img = Image.open(layer_path).convert("RGBA")
 
                 # 调整大小到目标尺寸
                 if layer_img.size != output_size:
@@ -156,7 +156,7 @@ class MiladyMaker:
         self,
         attributes: Optional[Dict[str, str]] = None,
         output_path: str = "output/milady.png",
-        output_size: tuple = (1000, 1000)
+        output_size: tuple = (1000, 1000),
     ) -> str:
         """
         生成并保存 Milady 图像
@@ -177,7 +177,7 @@ class MiladyMaker:
         milady = self.create_milady(attributes, output_size)
 
         # 保存
-        milady.save(output_file, 'PNG')
+        milady.save(output_file, "PNG")
 
         print(f"✅ Milady 已保存: {output_file}")
         return str(output_file)
@@ -189,10 +189,7 @@ class MiladyMaker:
         Returns:
             {layer_name: option_count}
         """
-        return {
-            layer: len(options)
-            for layer, options in self.available_layers.items()
-        }
+        return {layer: len(options) for layer, options in self.available_layers.items()}
 
     def print_available_layers(self):
         """打印所有可用的图层选项"""
@@ -203,7 +200,9 @@ class MiladyMaker:
         for layer_name in self.LAYER_ORDER:
             options = self.get_available_options(layer_name)
             if options:
-                required = "✅ 必需" if layer_name in self.REQUIRED_LAYERS else "⚪ 可选"
+                required = (
+                    "✅ 必需" if layer_name in self.REQUIRED_LAYERS else "⚪ 可选"
+                )
                 print(f"\n{required} {layer_name} ({len(options)} 个选项)")
                 # 只显示前 5 个选项
                 preview = options[:5]

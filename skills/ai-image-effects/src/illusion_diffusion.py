@@ -30,7 +30,7 @@ class IllusionDiffusion:
         upscaler_strength: float = 1.0,
         seed: int = -1,
         sampler: str = "DPM++ Karras SDE",
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> str:
         """
         使用 IllusionDiffusion 生成图像
@@ -58,17 +58,17 @@ class IllusionDiffusion:
         try:
             # 调用 Gradio API
             result = self.client.predict(
-                control_image_path,                  # control_image
-                prompt,                              # prompt
-                negative_prompt,                     # negative_prompt
-                guidance_scale,                      # guidance_scale
-                controlnet_conditioning_scale,       # controlnet_conditioning_scale
-                control_guidance_start,              # control_guidance_start
-                control_guidance_end,                # control_guidance_end
-                upscaler_strength,                   # upscaler_strength
-                seed,                                # seed
-                sampler,                             # sampler
-                api_name="/inference"
+                control_image_path,  # control_image
+                prompt,  # prompt
+                negative_prompt,  # negative_prompt
+                guidance_scale,  # guidance_scale
+                controlnet_conditioning_scale,  # controlnet_conditioning_scale
+                control_guidance_start,  # control_guidance_start
+                control_guidance_end,  # control_guidance_end
+                upscaler_strength,  # upscaler_strength
+                seed,  # seed
+                sampler,  # sampler
+                api_name="/inference",
             )
 
             # result 是一个元组: (image, visible1, visible2, seed)
@@ -77,6 +77,7 @@ class IllusionDiffusion:
             # 如果指定了输出路径，复制到目标位置
             if output_path:
                 from shutil import copy2
+
                 Path(output_path).parent.mkdir(parents=True, exist_ok=True)
                 copy2(output_image_path, output_path)
                 print(f"✅ 图像已保存: {output_path}")
@@ -96,7 +97,9 @@ class IllusionDiffusion:
                 print("   - Space 正在休眠（Zero GPU）")
                 print("   - 服务器负载过高")
                 print("   - 输入图片格式或尺寸不符合要求")
-                print("   建议稍后重试或访问 https://huggingface.co/spaces/AP123/IllusionDiffusion")
+                print(
+                    "   建议稍后重试或访问 https://huggingface.co/spaces/AP123/IllusionDiffusion"
+                )
 
             raise Exception(f"IllusionDiffusion 生成失败: {error_msg}")
 
@@ -105,7 +108,7 @@ class IllusionDiffusion:
         milady_nft_path: str,
         description: str,
         output_path: Optional[str] = None,
-        effect_strength: float = 0.8
+        effect_strength: float = 0.8,
     ) -> str:
         """
         为 Milady NFT 添加特效
@@ -137,7 +140,7 @@ class IllusionDiffusion:
             negative_prompt=negative_prompt,
             controlnet_conditioning_scale=effect_strength,
             guidance_scale=7.5,
-            output_path=output_path
+            output_path=output_path,
         )
 
 
@@ -161,7 +164,7 @@ def test_illusion_diffusion():
         milady_nft_path=test_nft_path,
         description="holding a pizza, with neon text '$XNY to $1', cyberpunk style",
         output_path="output/test_illusion.png",
-        effect_strength=0.8
+        effect_strength=0.8,
     )
 
     print(f"✅ 测试完成！结果: {result}")

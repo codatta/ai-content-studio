@@ -41,83 +41,116 @@ class SAMDetector:
     """
 
     # SAM-2 model on Replicate
-    SAM_MODEL = "meta/sam-2:fe97b453a6455861e3bac769b441ca1f1086110da7466dbb65cf1eecfd60dc83"
+    SAM_MODEL = (
+        "meta/sam-2:fe97b453a6455861e3bac769b441ca1f1086110da7466dbb65cf1eecfd60dc83"
+    )
 
     # Position heuristics for each accessory type
     # Format: (y_min, y_max, x_min, x_max, size_min, size_max)
     # All values are percentages of image dimensions
     POSITION_HINTS = {
         "hat": {
-            "y_range": (0.0, 0.4),      # Top 40% of image
-            "x_range": (0.0, 1.0),      # Full width
-            "size_range": (0.05, 0.35), # 5-35% of image area
-            "name": "帽子"
+            "y_range": (0.0, 0.4),  # Top 40% of image
+            "x_range": (0.0, 1.0),  # Full width
+            "size_range": (0.05, 0.35),  # 5-35% of image area
+            "name": "帽子",
         },
         "glasses": {
-            "y_range": (0.25, 0.45),    # 25-45% from top (eye level)
-            "x_range": (0.2, 0.8),      # Center 60%
-            "size_range": (0.02, 0.15), # 2-15% of image area
-            "name": "眼镜"
+            "y_range": (0.25, 0.45),  # 25-45% from top (eye level)
+            "x_range": (0.2, 0.8),  # Center 60%
+            "size_range": (0.02, 0.15),  # 2-15% of image area
+            "name": "眼镜",
         },
         "earrings": {
-            "y_range": (0.35, 0.6),     # 35-60% from top (ear level)
-            "x_range": (0.0, 0.5),      # Left half (left ear visible)
-            "size_range": (0.002, 0.05), # 0.2-5% of image area (small)
-            "name": "耳环"
+            "y_range": (0.35, 0.6),  # 35-60% from top (ear level)
+            "x_range": (0.0, 0.5),  # Left half (left ear visible)
+            "size_range": (0.002, 0.05),  # 0.2-5% of image area (small)
+            "name": "耳环",
         },
         "necklace": {
-            "y_range": (0.45, 0.75),    # 45-75% from top (neck/chest)
-            "x_range": (0.2, 0.8),      # Center 60%
+            "y_range": (0.45, 0.75),  # 45-75% from top (neck/chest)
+            "x_range": (0.2, 0.8),  # Center 60%
             "size_range": (0.01, 0.2),  # 1-20% of image area
-            "name": "项链"
+            "name": "项链",
         },
         "scarf": {
-            "y_range": (0.58, 0.72),    # 58-72% from top (strict neck area, below face)
-            "x_range": (0.25, 0.75),    # Center 50% (tighter to avoid edges)
-            "size_range": (0.015, 0.12), # 1.5-12% of image area (smaller, neck-sized)
-            "name": "围巾"
+            "y_range": (0.58, 0.72),  # 58-72% from top (strict neck area, below face)
+            "x_range": (0.25, 0.75),  # Center 50% (tighter to avoid edges)
+            "size_range": (0.015, 0.12),  # 1.5-12% of image area (smaller, neck-sized)
+            "name": "围巾",
         },
         "face_accessories": {
-            "y_range": (0.3, 0.6),      # 30-60% from top (face area)
-            "x_range": (0.2, 0.8),      # Center 60%
-            "size_range": (0.005, 0.1), # 0.5-10% of image area
-            "name": "面部配饰"
+            "y_range": (0.3, 0.6),  # 30-60% from top (face area)
+            "x_range": (0.2, 0.8),  # Center 60%
+            "size_range": (0.005, 0.1),  # 0.5-10% of image area
+            "name": "面部配饰",
         },
         "other": {
-            "y_range": (0.0, 1.0),      # Anywhere
-            "x_range": (0.0, 1.0),      # Anywhere
-            "size_range": (0.001, 0.5), # Very flexible
-            "name": "其他配饰"
-        }
+            "y_range": (0.0, 1.0),  # Anywhere
+            "x_range": (0.0, 1.0),  # Anywhere
+            "size_range": (0.001, 0.5),  # Very flexible
+            "name": "其他配饰",
+        },
     }
 
     # Semantic mapping for intelligent accessory type inference
     # Maps common Chinese/English terms to position hints
     SEMANTIC_MAPPING = {
         # 头部配饰
-        "帽子": "hat", "hat": "hat", "cap": "hat", "头巾": "hat", "发带": "hat",
-        "headband": "hat", "头饰": "hat", "皇冠": "hat", "crown": "hat",
-
+        "帽子": "hat",
+        "hat": "hat",
+        "cap": "hat",
+        "头巾": "hat",
+        "发带": "hat",
+        "headband": "hat",
+        "头饰": "hat",
+        "皇冠": "hat",
+        "crown": "hat",
         # 眼部配饰
-        "眼镜": "glasses", "glasses": "glasses", "墨镜": "glasses", "sunglasses": "glasses",
-        "护目镜": "glasses", "goggles": "glasses", "单片眼镜": "glasses", "monocle": "glasses",
-
+        "眼镜": "glasses",
+        "glasses": "glasses",
+        "墨镜": "glasses",
+        "sunglasses": "glasses",
+        "护目镜": "glasses",
+        "goggles": "glasses",
+        "单片眼镜": "glasses",
+        "monocle": "glasses",
         # 耳部配饰
-        "耳环": "earrings", "earrings": "earrings", "耳钉": "earrings", "studs": "earrings",
-        "耳坠": "earrings", "dangles": "earrings", "耳饰": "earrings",
-
+        "耳环": "earrings",
+        "earrings": "earrings",
+        "耳钉": "earrings",
+        "studs": "earrings",
+        "耳坠": "earrings",
+        "dangles": "earrings",
+        "耳饰": "earrings",
         # 颈部配饰
-        "项链": "necklace", "necklace": "necklace", "choker": "necklace", "吊坠": "necklace",
-        "pendant": "necklace", "锁骨链": "necklace", "珠链": "necklace", "beads": "necklace",
-        "围巾": "scarf", "scarf": "scarf", "丝巾": "scarf", "领巾": "scarf",
-        "围脖": "scarf", "shawl": "scarf", "披肩": "scarf",
-
+        "项链": "necklace",
+        "necklace": "necklace",
+        "choker": "necklace",
+        "吊坠": "necklace",
+        "pendant": "necklace",
+        "锁骨链": "necklace",
+        "珠链": "necklace",
+        "beads": "necklace",
+        "围巾": "scarf",
+        "scarf": "scarf",
+        "丝巾": "scarf",
+        "领巾": "scarf",
+        "围脖": "scarf",
+        "shawl": "scarf",
+        "披肩": "scarf",
         # 面部配饰
-        "口罩": "face_accessories", "mask": "face_accessories", "面罩": "face_accessories",
-        "面具": "face_accessories", "鼻环": "face_accessories", "nose_ring": "face_accessories",
-
+        "口罩": "face_accessories",
+        "mask": "face_accessories",
+        "面罩": "face_accessories",
+        "面具": "face_accessories",
+        "鼻环": "face_accessories",
+        "nose_ring": "face_accessories",
         # 其他
-        "其他": "other", "other": "other", "配饰": "other", "accessory": "other"
+        "其他": "other",
+        "other": "other",
+        "配饰": "other",
+        "accessory": "other",
     }
 
     @classmethod
@@ -147,14 +180,18 @@ class SAMDetector:
         if normalized in cls.SEMANTIC_MAPPING:
             inferred_type = cls.SEMANTIC_MAPPING[normalized]
             display_name = cls.POSITION_HINTS[inferred_type]["name"]
-            print(f"✅ 智能推断配饰类型: '{user_input}' → {inferred_type} ({display_name})")
+            print(
+                f"✅ 智能推断配饰类型: '{user_input}' → {inferred_type} ({display_name})"
+            )
             return inferred_type, display_name
 
         # Fuzzy matching for partial keywords
         for keyword, accessory_type in cls.SEMANTIC_MAPPING.items():
             if keyword in normalized or normalized in keyword:
                 display_name = cls.POSITION_HINTS[accessory_type]["name"]
-                print(f"✅ 模糊匹配配饰类型: '{user_input}' → {accessory_type} ({display_name})")
+                print(
+                    f"✅ 模糊匹配配饰类型: '{user_input}' → {accessory_type} ({display_name})"
+                )
                 return accessory_type, display_name
 
         # Fallback to "other" for unknown types
@@ -224,7 +261,7 @@ class SAMDetector:
 
     def _get_cache_key(self, image_path: str) -> str:
         """Generate cache key from image file hash."""
-        with open(image_path, 'rb') as f:
+        with open(image_path, "rb") as f:
             file_hash = hashlib.md5(f.read()).hexdigest()
         return file_hash
 
@@ -247,13 +284,13 @@ class SAMDetector:
             return None
 
         # Load cached data
-        with open(cache_file, 'r', encoding='utf-8') as f:
+        with open(cache_file, "r", encoding="utf-8") as f:
             return json.load(f)
 
     def _cache_masks(self, cache_key: str, masks_info: List[Dict]):
         """Save mask data to cache."""
         cache_file = self.cache_dir / f"{cache_key}.json"
-        with open(cache_file, 'w', encoding='utf-8') as f:
+        with open(cache_file, "w", encoding="utf-8") as f:
             json.dump(masks_info, f, ensure_ascii=False, indent=2)
 
     def _run_sam(self, image_path: str) -> List[Dict]:
@@ -278,13 +315,10 @@ class SAMDetector:
 
         # Run SAM via Replicate API
         with open(image_path, "rb") as f:
-            output = replicate.run(
-                self.SAM_MODEL,
-                input={"image": f}
-            )
+            output = replicate.run(self.SAM_MODEL, input={"image": f})
 
         # Download individual masks
-        individual_masks = output.get('individual_masks', [])
+        individual_masks = output.get("individual_masks", [])
 
         if not individual_masks:
             print("⚠️  SAM 未返回任何掩码")
@@ -307,11 +341,11 @@ class SAMDetector:
             if response.status_code != 200:
                 continue
 
-            with open(temp_mask_path, 'wb') as f:
+            with open(temp_mask_path, "wb") as f:
                 f.write(response.content)
 
             # Analyze mask
-            mask_img = Image.open(temp_mask_path).convert('L')
+            mask_img = Image.open(temp_mask_path).convert("L")
             mask_array = np.array(mask_img)
 
             # Find bounding box
@@ -335,11 +369,13 @@ class SAMDetector:
             center_x = x1 + width // 2
             center_y = y1 + height // 2
 
-            masks_info.append({
-                'bbox': (int(x1), int(y1), int(width), int(height)),
-                'coverage': float(coverage),
-                'center': (int(center_x), int(center_y))
-            })
+            masks_info.append(
+                {
+                    "bbox": (int(x1), int(y1), int(width), int(height)),
+                    "coverage": float(coverage),
+                    "center": (int(center_x), int(center_y)),
+                }
+            )
 
         print(f"✅ SAM 检测到 {len(masks_info)} 个掩码")
 
@@ -348,8 +384,9 @@ class SAMDetector:
 
         return masks_info
 
-    def _calculate_iou(self, box1: Tuple[int, int, int, int],
-                       box2: Tuple[int, int, int, int]) -> float:
+    def _calculate_iou(
+        self, box1: Tuple[int, int, int, int], box2: Tuple[int, int, int, int]
+    ) -> float:
         """
         Calculate Intersection over Union between two bounding boxes.
 
@@ -385,8 +422,9 @@ class SAMDetector:
 
         return intersection / union if union > 0 else 0.0
 
-    def _calculate_position_score(self, mask_info: Dict, accessory_type: str,
-                                  img_width: int, img_height: int) -> float:
+    def _calculate_position_score(
+        self, mask_info: Dict, accessory_type: str, img_width: int, img_height: int
+    ) -> float:
         """
         Calculate position-based score for a mask.
 
@@ -407,9 +445,9 @@ class SAMDetector:
         hints = self.POSITION_HINTS[accessory_type]
 
         # Extract mask properties
-        x, y, w, h = mask_info['bbox']
-        center_x, center_y = mask_info['center']
-        coverage = mask_info['coverage'] / 100.0  # Convert to 0-1
+        x, y, w, h = mask_info["bbox"]
+        center_x, center_y = mask_info["center"]
+        coverage = mask_info["coverage"] / 100.0  # Convert to 0-1
 
         # Normalized positions
         norm_y = center_y / img_height
@@ -419,7 +457,7 @@ class SAMDetector:
         scores = []
 
         # Y position score
-        y_min, y_max = hints['y_range']
+        y_min, y_max = hints["y_range"]
         if y_min <= norm_y <= y_max:
             # Perfect position
             y_score = 1.0
@@ -432,7 +470,7 @@ class SAMDetector:
         scores.append(y_score)
 
         # X position score
-        x_min, x_max = hints['x_range']
+        x_min, x_max = hints["x_range"]
         if x_min <= norm_x <= x_max:
             x_score = 1.0
         else:
@@ -443,7 +481,7 @@ class SAMDetector:
         scores.append(x_score)
 
         # Size score
-        size_min, size_max = hints['size_range']
+        size_min, size_max = hints["size_range"]
         if size_min <= coverage <= size_max:
             size_score = 1.0
         else:
@@ -456,13 +494,17 @@ class SAMDetector:
         scores.append(size_score)
 
         # Weighted average (y position most important, then size, then x)
-        position_score = (scores[0] * 0.5 + scores[2] * 0.3 + scores[1] * 0.2)
+        position_score = scores[0] * 0.5 + scores[2] * 0.3 + scores[1] * 0.2
 
         return position_score
 
-    def detect_accessory(self, image_path: str, accessory_type: str,
-                        predefined_region: Optional[Tuple[int, int, int, int]] = None,
-                        iou_weight: float = 0.5) -> Optional[Tuple[int, int, int, int]]:
+    def detect_accessory(
+        self,
+        image_path: str,
+        accessory_type: str,
+        predefined_region: Optional[Tuple[int, int, int, int]] = None,
+        iou_weight: float = 0.5,
+    ) -> Optional[Tuple[int, int, int, int]]:
         """
         Detect accessory region using SAM with intelligent matching.
 
@@ -488,7 +530,7 @@ class SAMDetector:
         img_width, img_height = img.size
 
         # Filter out background masks (>90% coverage)
-        valid_masks = [m for m in masks_info if m['coverage'] < 90]
+        valid_masks = [m for m in masks_info if m["coverage"] < 90]
 
         if not valid_masks:
             print(f"⚠️  所有掩码都是背景，使用预定义区域")
@@ -509,7 +551,7 @@ class SAMDetector:
             # Calculate IoU if predefined region available
             iou = 0.0
             if predefined_region is not None:
-                iou = self._calculate_iou(mask['bbox'], predefined_region)
+                iou = self._calculate_iou(mask["bbox"], predefined_region)
 
             # Combined score
             if predefined_region is not None:
@@ -536,7 +578,9 @@ class SAMDetector:
             return predefined_region
 
         # Report results
-        accessory_name = self.POSITION_HINTS.get(accessory_type, {}).get('name', accessory_type)
+        accessory_name = self.POSITION_HINTS.get(accessory_type, {}).get(
+            "name", accessory_type
+        )
         print(f"✅ 检测到{accessory_name}:")
         print(f"   位置分数: {best_pos_score:.3f}")
         if predefined_region is not None:
@@ -544,11 +588,12 @@ class SAMDetector:
         print(f"   综合分数: {best_score:.3f}")
         print(f"   区域: {best_mask['bbox']}")
 
-        return best_mask['bbox']
+        return best_mask["bbox"]
 
     def clear_cache(self):
         """Clear all cached SAM results."""
         import shutil
+
         if self.cache_dir.exists():
             shutil.rmtree(self.cache_dir)
             self.cache_dir.mkdir(parents=True, exist_ok=True)

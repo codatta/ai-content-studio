@@ -13,7 +13,6 @@ class CreativeGMEngine:
     # 基础构件库（可以随意组合）
     BUILDING_BLOCKS = {
         "base": ["gm", "Gm", "GM"],
-
         "locations": [
             "from the trenches",
             "from the neural nets",
@@ -22,9 +21,8 @@ class CreativeGMEngine:
             "from the data mines",
             "from the training set",
             "from the annotation queue",
-            "from the edge cases"
+            "from the edge cases",
         ],
-
         "activities": [
             "debugging before coffee",
             "labeling before thinking",
@@ -32,9 +30,8 @@ class CreativeGMEngine:
             "fighting null values",
             "teaching machines to see",
             "finding the outliers",
-            "surviving another sprint"
+            "surviving another sprint",
         ],
-
         "objects": [
             "coffee",
             "laptop",
@@ -42,36 +39,35 @@ class CreativeGMEngine:
             "bugs",
             "deadlines",
             "PRs",
-            "merge conflicts"
+            "merge conflicts",
         ],
-
         "moods_single": [
-            "🤨", "🥱", "🫠", "🤯", "😮‍💨",
-            "💤", "☕", "🧹", "🎀", "💻",
-            "🚀", "🔥", "✨", "🤝"
+            "🤨",
+            "🥱",
+            "🫠",
+            "🤯",
+            "😮‍💨",
+            "💤",
+            "☕",
+            "🧹",
+            "🎀",
+            "💻",
+            "🚀",
+            "🔥",
+            "✨",
+            "🤝",
         ],
-
-        "moods_double": [
-            "😎😎", "🧹🧹", "☕☕", "🎀🎀",
-            "💀💀", "🫡🫡"
-        ],
-
-        "mood_combos": [
-            "☕💻", "🧹💻", "☕🤯", "💤☕",
-            "🧹✨", "🎀💻", "☕☀️"
-        ],
-
+        "moods_double": ["😎😎", "🧹🧹", "☕☕", "🎀🎀", "💀💀", "🫡🫡"],
+        "mood_combos": ["☕💻", "🧹💻", "☕🤯", "💤☕", "🧹✨", "🎀💻", "☕☀️"],
         "punctuation": ["", "...", ".", "—", ""],
-
         "questions": [
             "who's building today?",
             "who needs coffee?",
             "who's in the trenches?",
             "what are we fixing today?",
             "anyone else tired?",
-            "ready for chaos?"
+            "ready for chaos?",
         ],
-
         "statements": [
             "we got this",
             "one day at a time",
@@ -79,37 +75,38 @@ class CreativeGMEngine:
             "hang in there",
             "let's build",
             "still here",
-            "not dead yet"
+            "not dead yet",
         ],
-
         "meta_phrases": [
             "i say gm, you gm back — deal?",
             "algorithm pls show this to someone",
             "is anyone actually awake",
             "mandatory gm tweet",
-            "another day another dataset"
-        ]
+            "another day another dataset",
+        ],
     }
 
     # 生成策略
     STRATEGIES = [
-        "ultra_minimal",      # 30%
-        "minimal_location",   # 15%
-        "minimal_activity",   # 10%
-        "mood_emoji",         # 20%
-        "double_emoji",       # 3%
-        "emoji_combo",        # 5%
-        "ellipsis",          # 5%
-        "question",          # 5%
-        "statement",         # 4%
-        "meta",              # 3%
+        "ultra_minimal",  # 30%
+        "minimal_location",  # 15%
+        "minimal_activity",  # 10%
+        "mood_emoji",  # 20%
+        "double_emoji",  # 3%
+        "emoji_combo",  # 5%
+        "ellipsis",  # 5%
+        "question",  # 5%
+        "statement",  # 4%
+        "meta",  # 3%
     ]
 
     # 策略权重
     STRATEGY_WEIGHTS = [30, 15, 10, 20, 3, 5, 5, 5, 4, 3]
 
     @classmethod
-    def generate_creative_gm(cls, day_of_week: str = None, theme: str = None, avoid_list: list = None) -> dict:
+    def generate_creative_gm(
+        cls, day_of_week: str = None, theme: str = None, avoid_list: list = None
+    ) -> dict:
         """动态生成创意 GM
 
         Returns:
@@ -162,10 +159,10 @@ class CreativeGMEngine:
         """超极简 - 就是 gm"""
         base = random.choice(cls.BUILDING_BLOCKS["base"])
         return {
-            'text': base,
-            'strategy': 'ultra_minimal',
-            'components': [base],
-            'is_new_combo': False
+            "text": base,
+            "strategy": "ultra_minimal",
+            "components": [base],
+            "is_new_combo": False,
         }
 
     @classmethod
@@ -175,10 +172,10 @@ class CreativeGMEngine:
         location = random.choice(cls.BUILDING_BLOCKS["locations"])
         text = f"{base} {location}"
         return {
-            'text': text,
-            'strategy': 'minimal_location',
-            'components': [base, location],
-            'is_new_combo': True
+            "text": text,
+            "strategy": "minimal_location",
+            "components": [base, location],
+            "is_new_combo": True,
         }
 
     @classmethod
@@ -188,10 +185,10 @@ class CreativeGMEngine:
         activity = random.choice(cls.BUILDING_BLOCKS["activities"])
         text = f"{base} {activity}"
         return {
-            'text': text,
-            'strategy': 'minimal_activity',
-            'components': [base, activity],
-            'is_new_combo': True
+            "text": text,
+            "strategy": "minimal_activity",
+            "components": [base, activity],
+            "is_new_combo": True,
         }
 
     @classmethod
@@ -208,10 +205,10 @@ class CreativeGMEngine:
             text = f"{base} {emoji}"
 
         return {
-            'text': text,
-            'strategy': 'mood_emoji',
-            'components': [base, emoji],
-            'is_new_combo': False
+            "text": text,
+            "strategy": "mood_emoji",
+            "components": [base, emoji],
+            "is_new_combo": False,
         }
 
     @classmethod
@@ -221,10 +218,10 @@ class CreativeGMEngine:
         emoji_double = random.choice(cls.BUILDING_BLOCKS["moods_double"])
         text = f"{base} {emoji_double}"
         return {
-            'text': text,
-            'strategy': 'double_emoji',
-            'components': [base, emoji_double],
-            'is_new_combo': False
+            "text": text,
+            "strategy": "double_emoji",
+            "components": [base, emoji_double],
+            "is_new_combo": False,
         }
 
     @classmethod
@@ -234,10 +231,10 @@ class CreativeGMEngine:
         combo = random.choice(cls.BUILDING_BLOCKS["mood_combos"])
         text = f"{base} {combo}"
         return {
-            'text': text,
-            'strategy': 'emoji_combo',
-            'components': [base, combo],
-            'is_new_combo': False
+            "text": text,
+            "strategy": "emoji_combo",
+            "components": [base, combo],
+            "is_new_combo": False,
         }
 
     @classmethod
@@ -253,10 +250,10 @@ class CreativeGMEngine:
             text = f"{base}... {emoji}"
 
         return {
-            'text': text,
-            'strategy': 'ellipsis',
-            'components': [base, "ellipsis"],
-            'is_new_combo': False
+            "text": text,
+            "strategy": "ellipsis",
+            "components": [base, "ellipsis"],
+            "is_new_combo": False,
         }
 
     @classmethod
@@ -272,10 +269,10 @@ class CreativeGMEngine:
             text = f"{base}, {question}"
 
         return {
-            'text': text,
-            'strategy': 'question',
-            'components': [base, question],
-            'is_new_combo': True
+            "text": text,
+            "strategy": "question",
+            "components": [base, question],
+            "is_new_combo": True,
         }
 
     @classmethod
@@ -288,10 +285,10 @@ class CreativeGMEngine:
         text = f"{base}\n\n{statement}"
 
         return {
-            'text': text,
-            'strategy': 'statement',
-            'components': [base, statement],
-            'is_new_combo': True
+            "text": text,
+            "strategy": "statement",
+            "components": [base, statement],
+            "is_new_combo": True,
         }
 
     @classmethod
@@ -299,10 +296,10 @@ class CreativeGMEngine:
         """Meta 幽默"""
         phrase = random.choice(cls.BUILDING_BLOCKS["meta_phrases"])
         return {
-            'text': phrase,
-            'strategy': 'meta',
-            'components': [phrase],
-            'is_new_combo': False
+            "text": phrase,
+            "strategy": "meta",
+            "components": [phrase],
+            "is_new_combo": False,
         }
 
     @classmethod
@@ -322,34 +319,35 @@ class CreativeGMEngine:
         for i in range(n):
             gm = cls.generate_creative_gm()
 
-            if gm['text'] in texts_seen:
+            if gm["text"] in texts_seen:
                 duplicates += 1
             else:
-                texts_seen.add(gm['text'])
+                texts_seen.add(gm["text"])
 
-            results.append({
-                'id': i + 1,
-                'gm': gm,
-                'is_duplicate': gm['text'] in texts_seen and i > 0
-            })
+            results.append(
+                {
+                    "id": i + 1,
+                    "gm": gm,
+                    "is_duplicate": gm["text"] in texts_seen and i > 0,
+                }
+            )
 
         stats = {
-            'total': n,
-            'unique': len(texts_seen),
-            'duplicates': duplicates,
-            'duplicate_rate': f"{duplicates/n*100:.1f}%",
-            'strategy_distribution': {}
+            "total": n,
+            "unique": len(texts_seen),
+            "duplicates": duplicates,
+            "duplicate_rate": f"{duplicates/n*100:.1f}%",
+            "strategy_distribution": {},
         }
 
         # 统计策略分布
         for r in results:
-            strategy = r['gm']['strategy']
-            stats['strategy_distribution'][strategy] = stats['strategy_distribution'].get(strategy, 0) + 1
+            strategy = r["gm"]["strategy"]
+            stats["strategy_distribution"][strategy] = (
+                stats["strategy_distribution"].get(strategy, 0) + 1
+            )
 
-        return {
-            'results': results,
-            'stats': stats
-        }
+        return {"results": results, "stats": stats}
 
     @classmethod
     def expand_vocabulary(cls, new_locations: list = None, new_activities: list = None):
@@ -369,7 +367,7 @@ class CreativeGMEngine:
 
 
 # 测试和演示
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("🧹 Jessie's Creative GM Engine\n")
     print("=" * 60)
 
@@ -381,16 +379,16 @@ if __name__ == '__main__':
     print(f"  Unique: {batch['stats']['unique']}")
     print(f"  Duplicate Rate: {batch['stats']['duplicate_rate']}")
     print("\n  Strategy Distribution:")
-    for strategy, count in batch['stats']['strategy_distribution'].items():
+    for strategy, count in batch["stats"]["strategy_distribution"].items():
         print(f"    - {strategy}: {count}")
 
     print("\n" + "=" * 60)
     print("\n🎲 Sample GMs:\n")
 
-    for item in batch['results'][:15]:
-        gm = item['gm']
+    for item in batch["results"][:15]:
+        gm = item["gm"]
         print(f"[{item['id']}] {gm['strategy']}")
         print(f"    {gm['text']}")
-        if gm['is_new_combo']:
+        if gm["is_new_combo"]:
             print(f"    ✨ NEW COMBO")
         print()

@@ -20,14 +20,19 @@ def create_mcdonald_background(size: Tuple[int, int] = (1000, 1250)) -> Image.Im
         PIL Image (RGBA 格式)
     """
     # 尝试加载真实的 McDonald Logo
-    logo_path = Path(__file__).parent.parent.parent / "assets" / "backgrounds" / "mcdonalds_logo.png"
+    logo_path = (
+        Path(__file__).parent.parent.parent
+        / "assets"
+        / "backgrounds"
+        / "mcdonalds_logo.png"
+    )
 
     if logo_path.exists():
         # 使用真实 Logo
         logo = Image.open(logo_path)
 
         # 创建白色背景
-        background = Image.new('RGBA', size, (255, 255, 255, 255))
+        background = Image.new("RGBA", size, (255, 255, 255, 255))
 
         # 平铺 Logo（2x3 = 6 个 logo）
         tile_width = size[0] // 2
@@ -38,7 +43,11 @@ def create_mcdonald_background(size: Tuple[int, int] = (1000, 1250)) -> Image.Im
             for col in range(2):
                 x = col * tile_width
                 y = row * tile_height
-                background.paste(logo_resized, (x, y), logo_resized if logo_resized.mode == 'RGBA' else None)
+                background.paste(
+                    logo_resized,
+                    (x, y),
+                    logo_resized if logo_resized.mode == "RGBA" else None,
+                )
 
         return background
 
@@ -47,7 +56,7 @@ def create_mcdonald_background(size: Tuple[int, int] = (1000, 1250)) -> Image.Im
         from PIL import ImageDraw, ImageFont
 
         # McDonald 红色背景
-        bg = Image.new('RGB', size, color=(218, 2, 14))
+        bg = Image.new("RGB", size, color=(218, 2, 14))
         draw = ImageDraw.Draw(bg)
 
         # McDonald 黄色
@@ -62,10 +71,14 @@ def create_mcdonald_background(size: Tuple[int, int] = (1000, 1250)) -> Image.Im
                 try:
                     font_size = min(m_width, m_height) // 2
                     try:
-                        font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size)
+                        font = ImageFont.truetype(
+                            "/System/Library/Fonts/Helvetica.ttc", font_size
+                        )
                     except:
                         try:
-                            font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", font_size)
+                            font = ImageFont.truetype(
+                                "/System/Library/Fonts/Arial.ttf", font_size
+                            )
                         except:
                             font = ImageFont.load_default()
 
@@ -73,15 +86,9 @@ def create_mcdonald_background(size: Tuple[int, int] = (1000, 1250)) -> Image.Im
                     text_y = y + m_height // 2
 
                     draw.text(
-                        (text_x, text_y),
-                        "M",
-                        fill=yellow,
-                        font=font,
-                        anchor="mm"
+                        (text_x, text_y), "M", fill=yellow, font=font, anchor="mm"
                     )
                 except:
                     pass
 
-        return bg.convert('RGBA')
-
-
+        return bg.convert("RGBA")

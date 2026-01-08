@@ -1,7 +1,9 @@
 """Claude AI 客户端"""
+
 from anthropic import Anthropic
 from pathlib import Path
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from skills.gm_ascii_art import generate_ascii_gm
 from ..core.config import Config
@@ -10,7 +12,8 @@ from ..utils.emoji_library import format_emoji_guide_for_prompt
 from .unified_freshness_monitor import get_unified_monitor
 import random
 
-logger = setup_logger('claude_client')
+logger = setup_logger("claude_client")
+
 
 class ClaudeClient:
     """Claude AI 客户端"""
@@ -20,21 +23,17 @@ class ClaudeClient:
         self.skill = self._load_skill()
         self.recent_gm_posts = []  # 存储最近生成的 GM posts，防止重复
         self.unified_monitor = get_unified_monitor()  # 统一新鲜度监控
-    
+
     def _load_skill(self) -> str:
         """加载 SKILL.md"""
-        skill_path = Config.SKILLS_PATH / 'SKILL.md'
-        with open(skill_path, 'r', encoding='utf-8') as f:
+        skill_path = Config.SKILLS_PATH / "SKILL.md"
+        with open(skill_path, "r", encoding="utf-8") as f:
             return f.read()
-    
-    def generate_content(
-        self,
-        prompt: str,
-        max_tokens: int = 500
-    ) -> str:
+
+    def generate_content(self, prompt: str, max_tokens: int = 500) -> str:
         """
         生成内容
-        
+
         Args:
             prompt: 用户提示
             max_tokens: 最大 token 数
@@ -44,33 +43,25 @@ class ClaudeClient:
                 model="claude-sonnet-4-20250514",
                 max_tokens=max_tokens,
                 system=self.skill,  # Skills 作为 system prompt
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
+                messages=[{"role": "user", "content": prompt}],
             )
-            
+
             content = response.content[0].text
             logger.info(f"Generated content: {content[:100]}...")
             return content
-            
+
         except Exception as e:
             logger.error(f"Error generating content: {e}")
             return ""
-    
-    def generate_reply(
-        self,
-        tweet_text: str,
-        tweet_author: str,
-        priority: str
-    ) -> dict:
+
+    def generate_reply(self, tweet_text: str, tweet_author: str, priority: str) -> dict:
         """
         生成 3 个不同风格的回复
 
         Returns:
             dict: {'short': str, 'medium': str, 'long': str}
         """
-        emoji_guide = format_emoji_guide_for_prompt('reply', None, tweet_text)
+        emoji_guide = format_emoji_guide_for_prompt("reply", None, tweet_text)
 
         prompt = f"""Generate THREE different replies to this tweet, varying in length and depth:
 
@@ -110,26 +101,25 @@ Important: Adjust each version's length and depth based on the tweet content. No
         response = self.generate_content(prompt, max_tokens=500)
 
         # Parse the response
-        replies = {'short': '', 'medium': '', 'long': ''}
+        replies = {"short": "", "medium": "", "long": ""}
 
-        for line in response.split('\n'):
+        for line in response.split("\n"):
             line = line.strip()
-            if line.startswith('SHORT:'):
-                replies['short'] = line.replace('SHORT:', '').strip()
-            elif line.startswith('MEDIUM:'):
-                replies['medium'] = line.replace('MEDIUM:', '').strip()
-            elif line.startswith('LONG:'):
-                replies['long'] = line.replace('LONG:', '').strip()
+            if line.startswith("SHORT:"):
+                replies["short"] = line.replace("SHORT:", "").strip()
+            elif line.startswith("MEDIUM:"):
+                replies["medium"] = line.replace("MEDIUM:", "").strip()
+            elif line.startswith("LONG:"):
+                replies["long"] = line.replace("LONG:", "").strip()
 
-        logger.info(f"Generated 3 replies - Short: {replies['short'][:30]}... Medium: {replies['medium'][:30]}... Long: {replies['long'][:30]}...")
+        logger.info(
+            f"Generated 3 replies - Short: {replies['short'][:30]}... Medium: {replies['medium'][:30]}... Long: {replies['long'][:30]}..."
+        )
 
         return replies
-    
+
     def generate_original(
-        self,
-        theme: str,
-        day_of_week: str,
-        content_type: str = 'main'
+        self, theme: str, day_of_week: str, content_type: str = "main"
     ) -> str:
         """生成原创内容
 
@@ -139,7 +129,7 @@ Important: Adjust each version's length and depth based on the tweet content. No
             content_type: 内容类型 - 'gm', 'main', 'casual'
         """
 
-        if content_type == 'gm':
+        if content_type == "gm":
             # GM 类 post - 简短,真实,展示存在感
 
             # 10-15% 概率使用 ASCII Art
@@ -159,12 +149,21 @@ Important: Adjust each version's length and depth based on the tweet content. No
 
             # 正常文本 GM（88% 概率）
             # 使用通用 emoji 库
-            emoji_guide = format_emoji_guide_for_prompt('gm', day_of_week, theme)
+            emoji_guide = format_emoji_guide_for_prompt("gm", day_of_week, theme)
 
             # 添加最近生成过的 GM posts 到 prompt，避免重复
             avoid_list = ""
             if self.recent_gm_posts:
-                avoid_list = f"\n\nDO NOT generate any of these (already used recently):\n" + "\n".join([f"❌ \"{post[:50]}...\"" if len(post) > 50 else f"❌ \"{post}\"" for post in self.recent_gm_posts[-20:] if post != "[ASCII_ART]"])
+                avoid_list = (
+                    f"\n\nDO NOT generate any of these (already used recently):\n"
+                    + "\n".join(
+                        [
+                            f'❌ "{post[:50]}..."' if len(post) > 50 else f'❌ "{post}"'
+                            for post in self.recent_gm_posts[-20:]
+                            if post != "[ASCII_ART]"
+                        ]
+                    )
+                )
 
             prompt = f"""Create a GM (good morning) tweet for Jessie (data janitor at Codatta).
 
@@ -230,9 +229,9 @@ BAD EXAMPLES (DON'T do this):
 
 Return ONLY the GM tweet, nothing else."""
 
-        elif content_type == 'casual':
+        elif content_type == "casual":
             # Casual post - 轻松,社区感,真实
-            emoji_guide = format_emoji_guide_for_prompt('casual', day_of_week, theme)
+            emoji_guide = format_emoji_guide_for_prompt("casual", day_of_week, theme)
 
             prompt = f"""Create a casual evening/weekend tweet for Jessie (data janitor at Codatta).
 
@@ -259,7 +258,7 @@ Return ONLY the casual tweet."""
 
         else:
             # Main content - 主要内容,深度,Codatta 相关
-            emoji_guide = format_emoji_guide_for_prompt('main', day_of_week, theme)
+            emoji_guide = format_emoji_guide_for_prompt("main", day_of_week, theme)
 
             prompt = f"""Create a MAIN original tweet for Jessie - a REAL intern at Codatta, not a marketing account.
 
@@ -315,7 +314,7 @@ Return ONLY the tweet content."""
         # 记录到统一新鲜度监控系统（支持所有类型）
         if result:
             # GM 特殊处理：维护 recent_gm_posts 避免重复
-            if content_type == 'gm':
+            if content_type == "gm":
                 self.recent_gm_posts.append(result.strip())
                 if len(self.recent_gm_posts) > 50:
                     self.recent_gm_posts = self.recent_gm_posts[-50:]
@@ -324,13 +323,15 @@ Return ONLY the tweet content."""
             self.unified_monitor.record_post(
                 content_type=content_type,
                 post_text=result.strip(),
-                metadata={'theme': theme, 'day': day_of_week}
+                metadata={"theme": theme, "day": day_of_week},
             )
 
             # 自动检查并提醒（根据各类型的检查间隔）
             check_result = self.unified_monitor.check_and_alert(content_type)
 
-            if check_result.get('should_alert'):
-                logger.warning(f"\n{'='*70}\n⚠️ {content_type.upper()} 内容新鲜度警报！\n{'='*70}")
+            if check_result.get("should_alert"):
+                logger.warning(
+                    f"\n{'='*70}\n⚠️ {content_type.upper()} 内容新鲜度警报！\n{'='*70}"
+                )
 
         return result

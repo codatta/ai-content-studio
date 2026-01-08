@@ -26,7 +26,7 @@ class StableDiffusionEffects:
         Args:
             api_url: AUTOMATIC1111 WebUI API 地址
         """
-        self.api_url = api_url.rstrip('/')
+        self.api_url = api_url.rstrip("/")
         self.img2img_endpoint = f"{self.api_url}/sdapi/v1/img2img"
 
     def check_connection(self) -> bool:
@@ -50,18 +50,18 @@ class StableDiffusionEffects:
         img = Image.open(image_path)
 
         # 转换为 RGB（SD 不支持 RGBA）
-        if img.mode == 'RGBA':
+        if img.mode == "RGBA":
             # 创建白色背景
-            background = Image.new('RGB', img.size, (255, 255, 255))
+            background = Image.new("RGB", img.size, (255, 255, 255))
             background.paste(img, mask=img.split()[3])  # 使用 alpha 通道作为 mask
             img = background
-        elif img.mode != 'RGB':
-            img = img.convert('RGB')
+        elif img.mode != "RGB":
+            img = img.convert("RGB")
 
         # 编码为 base64
         buffered = BytesIO()
         img.save(buffered, format="PNG")
-        img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         return img_base64
 
@@ -87,7 +87,7 @@ class StableDiffusionEffects:
         strength: float = 0.5,
         steps: int = 30,
         cfg_scale: float = 7.0,
-        seed: int = -1
+        seed: int = -1,
     ) -> str:
         """
         应用 Effect 效果（图像滤镜）
@@ -119,7 +119,7 @@ class StableDiffusionEffects:
             "width": 512,  # SD 1.5 标准尺寸
             "height": 512,
             "restore_faces": False,
-            "include_init_images": False
+            "include_init_images": False,
         }
 
         # 发送请求
@@ -130,11 +130,13 @@ class StableDiffusionEffects:
             result = response.json()
 
             # 解码输出图片
-            output_image = self.base64_to_image(result['images'][0])
+            output_image = self.base64_to_image(result["images"][0])
 
             # 保存
             if output_path is None:
-                output_path = str(Path(image_path).parent / f"effect_{Path(image_path).stem}.png")
+                output_path = str(
+                    Path(image_path).parent / f"effect_{Path(image_path).stem}.png"
+                )
 
             output_image.save(output_path)
 
@@ -151,7 +153,7 @@ class StableDiffusionEffects:
         strength: float = 0.75,
         steps: int = 50,
         cfg_scale: float = 8.0,
-        seed: int = -1
+        seed: int = -1,
     ) -> str:
         """
         应用 Mirage 效果（幻觉扩散）
@@ -174,11 +176,12 @@ class StableDiffusionEffects:
         return self.apply_effect(
             image_path=image_path,
             prompt=f"{prompt}, highly detailed, dramatic lighting, surreal",
-            output_path=output_path or str(Path(image_path).parent / f"mirage_{Path(image_path).stem}.png"),
+            output_path=output_path
+            or str(Path(image_path).parent / f"mirage_{Path(image_path).stem}.png"),
             strength=strength,
             steps=steps,
             cfg_scale=cfg_scale,
-            seed=seed
+            seed=seed,
         )
 
 
@@ -204,7 +207,7 @@ def main():
                 image_path=test_image,
                 prompt="liminal space, dreamlike atmosphere",
                 strength=0.4,
-                output_path="output/test_effect.png"
+                output_path="output/test_effect.png",
             )
             print(f"✅ Effect 成功: {result}")
         except Exception as e:

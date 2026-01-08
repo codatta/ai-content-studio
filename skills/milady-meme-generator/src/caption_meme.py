@@ -22,7 +22,7 @@ class CaptionMeme:
                 "C:\\Windows\\Fonts\\impact.ttf",  # Windows
                 "assets/fonts/Impact.ttf",
             ],
-            "description": "经典 Meme 字体（粗体、有力）"
+            "description": "经典 Meme 字体（粗体、有力）",
         },
         "angelic": {
             "name": "Angelic",
@@ -32,7 +32,7 @@ class CaptionMeme:
                 "C:\\Windows\\Fonts\\pala.ttf",  # Windows - Palatino
                 "assets/fonts/AngelicWar.ttf",
             ],
-            "description": "优雅天使字体"
+            "description": "优雅天使字体",
         },
         "chinese": {
             "name": "Chinese",
@@ -44,7 +44,7 @@ class CaptionMeme:
                 "C:\\Windows\\Fonts\\simhei.ttf",  # Windows - 黑体
                 "assets/fonts/SourceHanSansCN-Bold.otf",
             ],
-            "description": "中文粗体字体"
+            "description": "中文粗体字体",
         },
         "glow": {
             "name": "Glow",
@@ -54,15 +54,17 @@ class CaptionMeme:
                 "assets/fonts/Arial.ttf",
             ],
             "description": "发光效果字体",
-            "glow": True  # 特殊标记：需要发光效果
-        }
+            "glow": True,  # 特殊标记：需要发光效果
+        },
     }
 
     # 默认字体路径（向后兼容）
     DEFAULT_FONTS = FONTS["impact"]["paths"]
     CHINESE_FONTS = FONTS["chinese"]["paths"]
 
-    def __init__(self, font_path: Optional[str] = None, chinese_font_path: Optional[str] = None):
+    def __init__(
+        self, font_path: Optional[str] = None, chinese_font_path: Optional[str] = None
+    ):
         """
         初始化文字梗图生成器
 
@@ -77,7 +79,7 @@ class CaptionMeme:
             if font_file:
                 self.loaded_fonts[font_name] = {
                     "path": font_file,
-                    "config": font_config
+                    "config": font_config,
                 }
 
         # 向后兼容
@@ -89,7 +91,9 @@ class CaptionMeme:
         print(f"🔤 默认英文: {self.font_path}")
         print(f"🔤 默认中文: {self.chinese_font_path}")
 
-    def _find_font(self, custom_font: Optional[str] = None, font_list: list = None) -> Optional[Path]:
+    def _find_font(
+        self, custom_font: Optional[str] = None, font_list: list = None
+    ) -> Optional[Path]:
         """查找可用的字体文件"""
         # 如果提供了自定义字体，优先使用
         if custom_font:
@@ -111,15 +115,12 @@ class CaptionMeme:
     def _has_chinese(self, text: str) -> bool:
         """检测文本是否包含中文字符"""
         for char in text:
-            if '\u4e00' <= char <= '\u9fff':
+            if "\u4e00" <= char <= "\u9fff":
                 return True
         return False
 
     def _calculate_font_size(
-        self,
-        text: str,
-        image_width: int,
-        max_width_ratio: float = 0.9
+        self, text: str, image_width: int, max_width_ratio: float = 0.9
     ) -> int:
         """
         根据图片宽度和文字长度计算合适的字体大小
@@ -151,7 +152,7 @@ class CaptionMeme:
         font: ImageFont.FreeTypeFont,
         text_color: str = "white",
         outline_color: str = "black",
-        outline_width: int = 3
+        outline_width: int = 3,
     ):
         """
         绘制带描边的文字
@@ -175,7 +176,7 @@ class CaptionMeme:
                         (x + offset_x, y + offset_y),
                         text,
                         font=font,
-                        fill=outline_color
+                        fill=outline_color,
                     )
 
         # 绘制主文字
@@ -189,7 +190,7 @@ class CaptionMeme:
         font: ImageFont.FreeTypeFont,
         text_color: str = "white",
         glow_color: str = "#00FFFF",  # 青色发光
-        glow_width: int = 8
+        glow_width: int = 8,
     ):
         """
         绘制带发光效果的文字
@@ -206,7 +207,7 @@ class CaptionMeme:
         x, y = position
 
         # Convert glow_color hex to RGB tuple
-        glow_rgb = tuple(int(glow_color.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
+        glow_rgb = tuple(int(glow_color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
 
         # 1. 先绘制深色阴影（提供对比度）
         shadow_color = (0, 0, 0, 200)  # 半透明黑色
@@ -214,10 +215,7 @@ class CaptionMeme:
             for offset_y in range(-3, 4):
                 if offset_x != 0 or offset_y != 0:
                     draw.text(
-                        (x + offset_x, y + offset_y),
-                        text,
-                        font=font,
-                        fill=shadow_color
+                        (x + offset_x, y + offset_y), text, font=font, fill=shadow_color
                     )
 
         # 2. 绘制发光效果（多层渐变）
@@ -233,7 +231,7 @@ class CaptionMeme:
                             (x + offset_x, y + offset_y),
                             text,
                             font=font,
-                            fill=glow_with_alpha
+                            fill=glow_with_alpha,
                         )
 
         # 3. 绘制主文字 - 使用发光颜色（完全不透明）
@@ -250,7 +248,7 @@ class CaptionMeme:
         outline_width: int = 3,
         all_caps: bool = True,
         use_chinese: bool = False,
-        font_style: str = "impact"
+        font_style: str = "impact",
     ) -> Image.Image:
         """
         在图片上添加上下文字
@@ -319,13 +317,17 @@ class CaptionMeme:
             # 根据字体风格选择绘制方法
             if use_glow:
                 self._draw_text_with_glow(
-                    draw, top_text, (x, y), font,
-                    text_color=text_color
+                    draw, top_text, (x, y), font, text_color=text_color
                 )
             else:
                 self._draw_text_with_outline(
-                    draw, top_text, (x, y), font,
-                    text_color, outline_color, outline_width
+                    draw,
+                    top_text,
+                    (x, y),
+                    font,
+                    text_color,
+                    outline_color,
+                    outline_width,
                 )
 
         # 处理底部文字
@@ -350,13 +352,17 @@ class CaptionMeme:
             # 根据字体风格选择绘制方法
             if use_glow:
                 self._draw_text_with_glow(
-                    draw, bottom_text, (x, y), font,
-                    text_color=text_color
+                    draw, bottom_text, (x, y), font, text_color=text_color
                 )
             else:
                 self._draw_text_with_outline(
-                    draw, bottom_text, (x, y), font,
-                    text_color, outline_color, outline_width
+                    draw,
+                    bottom_text,
+                    (x, y),
+                    font,
+                    text_color,
+                    outline_color,
+                    outline_width,
                 )
 
         return img
@@ -367,7 +373,7 @@ class CaptionMeme:
         top_text: str = "",
         bottom_text: str = "",
         output_path: str = "output/meme.png",
-        **kwargs
+        **kwargs,
     ) -> str:
         """
         从文件创建梗图
@@ -383,7 +389,7 @@ class CaptionMeme:
             输出文件路径
         """
         # 加载图片
-        img = Image.open(image_path).convert('RGB')
+        img = Image.open(image_path).convert("RGB")
 
         # 添加文字
         meme = self.add_caption(img, top_text, bottom_text, **kwargs)
@@ -391,7 +397,7 @@ class CaptionMeme:
         # 保存
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        meme.save(output_file, 'PNG')
+        meme.save(output_file, "PNG")
 
         print(f"✅ 梗图已保存: {output_file}")
         return str(output_file)
@@ -402,7 +408,7 @@ def create_caption_meme(
     image_path: str,
     top_text: str = "",
     bottom_text: str = "",
-    output_path: str = "output/caption_meme.png"
+    output_path: str = "output/caption_meme.png",
 ) -> str:
     """
     快速创建文字梗图
@@ -431,7 +437,7 @@ if __name__ == "__main__":
             test_image,
             top_text="GM BUILDERS",
             bottom_text="LFG",
-            output_path="output/test_caption_meme.png"
+            output_path="output/test_caption_meme.png",
         )
         print(f"✅ 测试完成: {output}")
     else:

@@ -23,7 +23,7 @@ OFFICIAL_LAYERS = {
     "Glasses": 10,
     "Hat": 57,
     "Overlay": 41,
-    "UnclothedBase": 6  # 这个可能缺失
+    "UnclothedBase": 6,  # 这个可能缺失
 }
 
 # 检查本地下载的图层
@@ -47,11 +47,11 @@ for category, official_count in OFFICIAL_LAYERS.items():
     local_count = local_layers.get(category, 0)
     total_official += official_count
     total_local += local_count
-    
+
     status = "✅" if local_count == official_count else "❌ 缺失"
     if local_count < official_count:
         missing_categories.append(f"{category} (缺 {official_count - local_count})")
-    
+
     print(f"{category:<20} {official_count:<8} {local_count:<8} {status}")
 
 print("=" * 50)
@@ -65,4 +65,6 @@ if missing_categories:
 else:
     print("✅ 所有图层已完整下载！")
 
-print(f"\n完成度: {total_local}/{total_official} ({total_local*100/total_official:.1f}%)")
+print(
+    f"\n完成度: {total_local}/{total_official} ({total_local*100/total_official:.1f}%)"
+)

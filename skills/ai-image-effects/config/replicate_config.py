@@ -186,32 +186,29 @@ PRESETS = {
         "guidance_scale": 7.0,
         "num_inference_steps": 40,
         "positive_prompt_template": "milady nft character, {description}, high quality, detailed, preserving original features",
-        "negative_prompt": "low quality, blurry, bad anatomy, deformed, ugly, distorted"
+        "negative_prompt": "low quality, blurry, bad anatomy, deformed, ugly, distorted",
     },
-
     "subtle": {  # 微妙效果，最大保留原图
         "effect_strength": 0.8,
         "guidance_scale": 6.0,
         "num_inference_steps": 35,
         "positive_prompt_template": "anime girl, {description}",
-        "negative_prompt": "low quality, blurry"
+        "negative_prompt": "low quality, blurry",
     },
-
     "strong": {  # 强烈效果，明显风格转换
         "effect_strength": 1.5,
         "guidance_scale": 8.0,
         "num_inference_steps": 45,
         "positive_prompt_template": "anime girl, {description}, masterpiece, best quality, highly detailed",
-        "negative_prompt": "low quality, blurry, bad anatomy, deformed, ugly, distorted, watermark"
+        "negative_prompt": "low quality, blurry, bad anatomy, deformed, ugly, distorted, watermark",
     },
-
     "artistic": {  # 艺术风格
         "effect_strength": 1.2,
         "guidance_scale": 7.5,
         "num_inference_steps": 40,
         "positive_prompt_template": "anime girl, {description}, digital art, vibrant colors, artistic",
-        "negative_prompt": "low quality, blurry, bad anatomy, watermark, text"
-    }
+        "negative_prompt": "low quality, blurry, bad anatomy, watermark, text",
+    },
 }
 
 

@@ -34,7 +34,7 @@ class StableDiffusionEffectsReplicate:
         Args:
             api_token: Replicate API Token (或从环境变量 REPLICATE_API_TOKEN 读取)
         """
-        self.api_token = api_token or os.getenv('REPLICATE_API_TOKEN')
+        self.api_token = api_token or os.getenv("REPLICATE_API_TOKEN")
 
         if not self.api_token:
             raise ValueError(
@@ -44,7 +44,7 @@ class StableDiffusionEffectsReplicate:
             )
 
         # 设置环境变量
-        os.environ['REPLICATE_API_TOKEN'] = self.api_token
+        os.environ["REPLICATE_API_TOKEN"] = self.api_token
 
     def apply_effect(
         self,
@@ -54,7 +54,7 @@ class StableDiffusionEffectsReplicate:
         strength: float = 0.5,
         steps: int = 30,
         cfg_scale: float = 7.0,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
     ) -> str:
         """
         应用 Effect 效果（图像滤镜）
@@ -86,8 +86,8 @@ class StableDiffusionEffectsReplicate:
                     "num_inference_steps": steps,
                     "guidance_scale": cfg_scale,
                     "prompt_strength": strength,
-                    "seed": seed
-                }
+                    "seed": seed,
+                },
             )
 
         # 下载输出图片
@@ -101,7 +101,9 @@ class StableDiffusionEffectsReplicate:
 
         # 保存
         if output_path is None:
-            output_path = str(Path(image_path).parent / f"effect_{Path(image_path).stem}.png")
+            output_path = str(
+                Path(image_path).parent / f"effect_{Path(image_path).stem}.png"
+            )
 
         img.save(output_path)
         print(f"✅ 已保存: {output_path}")
@@ -116,7 +118,7 @@ class StableDiffusionEffectsReplicate:
         strength: float = 0.75,
         steps: int = 50,
         cfg_scale: float = 8.0,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
     ) -> str:
         """
         应用 Mirage 效果（幻觉扩散）
@@ -138,11 +140,12 @@ class StableDiffusionEffectsReplicate:
         return self.apply_effect(
             image_path=image_path,
             prompt=f"{prompt}, highly detailed, dramatic lighting, surreal, artistic",
-            output_path=output_path or str(Path(image_path).parent / f"mirage_{Path(image_path).stem}.png"),
+            output_path=output_path
+            or str(Path(image_path).parent / f"mirage_{Path(image_path).stem}.png"),
             strength=strength,
             steps=steps,
             cfg_scale=cfg_scale,
-            seed=seed
+            seed=seed,
         )
 
 
@@ -151,7 +154,7 @@ def main():
     import sys
 
     # 检查 API Token
-    api_token = os.getenv('REPLICATE_API_TOKEN')
+    api_token = os.getenv("REPLICATE_API_TOKEN")
     if not api_token:
         print("❌ 需要设置 REPLICATE_API_TOKEN")
         print("\n获取步骤：")
@@ -173,32 +176,32 @@ def main():
         print("   请先生成一张测试图片")
         sys.exit(1)
 
-    print("="*70)
+    print("=" * 70)
     print("🧪 测试 Effect 功能")
-    print("="*70)
+    print("=" * 70)
 
     try:
         result = sd.apply_effect(
             image_path=test_image,
             prompt="liminal space, dreamlike atmosphere",
             strength=0.4,
-            output_path="output/test_effect_replicate.png"
+            output_path="output/test_effect_replicate.png",
         )
         print(f"\n🎉 Effect 成功!")
         print(f"   输出: {result}")
     except Exception as e:
         print(f"\n❌ Effect 失败: {e}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🧪 测试 Mirage 功能")
-    print("="*70)
+    print("=" * 70)
 
     try:
         result = sd.apply_mirage(
             image_path=test_image,
             prompt="cyberpunk aesthetic, neon lights",
             strength=0.7,
-            output_path="output/test_mirage_replicate.png"
+            output_path="output/test_mirage_replicate.png",
         )
         print(f"\n🎉 Mirage 成功!")
         print(f"   输出: {result}")

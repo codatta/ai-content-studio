@@ -23,7 +23,14 @@ class MemeGeneratorV2:
     STRUCTURAL_LAYERS = {"Hat", "Hair", "Shirt"}
 
     # 装饰性图层：可以直接叠加在原图上，保留所有细节
-    DECORATIVE_LAYERS = {"Glasses", "Mouth", "Overlay", "Earrings", "Necklaces", "Face Decoration"}
+    DECORATIVE_LAYERS = {
+        "Glasses",
+        "Mouth",
+        "Overlay",
+        "Earrings",
+        "Necklaces",
+        "Face Decoration",
+    }
 
     # ⚠️ 核心原则：能用原图就用原图！
     # 只有 STRUCTURAL_LAYERS 才触发重组，其他一律叠加
@@ -65,7 +72,7 @@ class MemeGeneratorV2:
         nft_dir: str = "assets/milady_nfts/images",
         layer_dir: str = "assets/milady_layers",
         font_path: Optional[str] = None,
-        enable_prompt_enhancer: bool = True
+        enable_prompt_enhancer: bool = True,
     ):
         """
         初始化梗图生成器 V2
@@ -105,7 +112,7 @@ class MemeGeneratorV2:
         font_style: str = "impact",
         output_path: Optional[str] = None,
         output_size: tuple = (1000, 1250),
-        use_base_layers: bool = False  # False=使用NFT原图+叠加, True=从基础图层自定义
+        use_base_layers: bool = False,  # False=使用NFT原图+叠加, True=从基础图层自定义
     ) -> str:
         """
         生成 Milady Meme
@@ -139,6 +146,7 @@ class MemeGeneratorV2:
         if use_base_layers:
             # 从基础图层开始合成（完全自定义）
             import random
+
             skins = ["Pale.png", "Pink.png", "Tan.png", "Black.png"]
             backgrounds = ["XP.png", "Clouds.png", "Sunset.png", "Streets.png"]
 
@@ -146,15 +154,14 @@ class MemeGeneratorV2:
                 skin=random.choice(skins),
                 background=random.choice(backgrounds),
                 layers=layers,
-                output_size=output_size
+                output_size=output_size,
             )
         elif nft_id is not None and layers:
             # ⚠️ 关键判断：使用 STRUCTURAL_LAYERS 常量
             # 只有结构性图层（Hat/Hair/Shirt）才触发重组
             # 装饰性图层（Mouth/Glasses/Overlay）一律叠加，保留原图所有细节
             needs_replacement = any(
-                category in layers
-                for category in self.STRUCTURAL_LAYERS
+                category in layers for category in self.STRUCTURAL_LAYERS
             )
 
             if needs_replacement:
@@ -163,25 +170,21 @@ class MemeGeneratorV2:
                 print(f"🔄 检测到结构性图层 {structural}，使用元数据重组模式")
                 print(f"⚠️  警告: 重组模式可能丢失部分细节（眼睛高光、面部阴影等）")
                 img = self.composer.compose_with_replacement(
-                    nft_id=nft_id,
-                    replacements=layers,
-                    output_size=output_size
+                    nft_id=nft_id, replacements=layers, output_size=output_size
                 )
             else:
                 # 只有装饰性图层（包括 Overlay），使用原图叠加模式（100%保留细节）
                 decorative = [cat for cat in layers if cat in self.DECORATIVE_LAYERS]
-                print(f"📸 仅装饰性图层 {decorative}，使用原图叠加模式（保留完整 NFT 细节）")
+                print(
+                    f"📸 仅装饰性图层 {decorative}，使用原图叠加模式（保留完整 NFT 细节）"
+                )
                 img = self.composer.compose(
-                    nft_id=nft_id,
-                    layers=layers,
-                    output_size=output_size
+                    nft_id=nft_id, layers=layers, output_size=output_size
                 )
         else:
             # 使用 NFT 原图（叠加模式）
             img = self.composer.compose(
-                nft_id=nft_id,
-                layers=layers,
-                output_size=output_size
+                nft_id=nft_id, layers=layers, output_size=output_size
             )
 
         if img is None:
@@ -191,9 +194,7 @@ class MemeGeneratorV2:
         # 2. 添加文字
         if top_text or bottom_text:
             img = self.caption.add_caption(
-                img, top_text, bottom_text,
-                all_caps=all_caps,
-                font_style=font_style
+                img, top_text, bottom_text, all_caps=all_caps, font_style=font_style
             )
 
         # 3. 保存
@@ -214,7 +215,7 @@ class MemeGeneratorV2:
         top_text: str = "",
         bottom_text: str = "",
         all_caps: bool = True,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> str:
         """
         生成随机 Milady Meme（随机 NFT + 随机图层）
@@ -237,7 +238,9 @@ class MemeGeneratorV2:
 
         # 2. 添加文字
         if top_text or bottom_text:
-            img = self.caption.add_caption(img, top_text, bottom_text, all_caps=all_caps)
+            img = self.caption.add_caption(
+                img, top_text, bottom_text, all_caps=all_caps
+            )
 
         # 3. 保存
         if output_path is None:
@@ -256,7 +259,7 @@ class MemeGeneratorV2:
         template_name: str,
         nft_id: Optional[int] = None,
         layers: Optional[Dict[str, str]] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> str:
         """
         使用预设模板生成 Meme
@@ -287,14 +290,14 @@ class MemeGeneratorV2:
             layers=layers,
             top_text=top_text,
             bottom_text=bottom_text,
-            output_path=output_path
+            output_path=output_path,
         )
 
     def batch_generate(
         self,
         count: int,
         template_name: Optional[str] = None,
-        output_dir: str = "output/batch_memes"
+        output_dir: str = "output/batch_memes",
     ) -> List[str]:
         """
         批量生成 Meme
@@ -327,8 +330,7 @@ class MemeGeneratorV2:
             # 生成 Meme
             print(f"\n[{i+1}/{count}] 生成中...")
             path = self.generate_from_template(
-                template_name=current_template,
-                output_path=str(output_path)
+                template_name=current_template, output_path=str(output_path)
             )
 
             if path:
@@ -359,7 +361,7 @@ class MemeGeneratorV2:
         prompt: str,
         bypass_enhancer: bool = False,
         nft_id: Optional[int] = None,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> str:
         """
         从自然语言描述生成 Meme（使用 Prompt Enhancer）
@@ -391,9 +393,7 @@ class MemeGeneratorV2:
         # 使用 Prompt Enhancer 增强提示词
         if self.prompt_enhancer and self.prompt_enhancer.is_available():
             enhanced_prompt = self.prompt_enhancer.enhance(
-                prompt,
-                bypass=bypass_enhancer,
-                context="milady meme"
+                prompt, bypass=bypass_enhancer, context="milady meme"
             )
         else:
             print("⚠️ Prompt Enhancer 不可用，使用原始提示词")
@@ -419,29 +419,26 @@ def main():
 
     gen = MemeGeneratorV2()
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 测试 1: 使用 NFT #0，添加装饰，加上 GM 文字")
-    print("="*60)
+    print("=" * 60)
 
     gen.generate(
         nft_id=0,
-        layers={
-            "Hat": "Cowboy Hat.png",
-            "Glasses": "Heart Glasses.png"
-        },
+        layers={"Hat": "Cowboy Hat.png", "Glasses": "Heart Glasses.png"},
         top_text="GM BUILDERS",
-        bottom_text="LFG"
+        bottom_text="LFG",
     )
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 测试 2: 随机 NFT + 随机图层 + 模板文字")
-    print("="*60)
+    print("=" * 60)
 
     gen.generate_from_template("crypto")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🧪 测试 3: 批量生成 3 个 GM Meme")
-    print("="*60)
+    print("=" * 60)
 
     gen.batch_generate(count=3, template_name="gm")
 

@@ -36,9 +36,11 @@ class MiladyNFTDownloader:
 
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+            }
+        )
 
     def get_token_uri(self, token_id: int) -> Optional[str]:
         """
@@ -57,8 +59,8 @@ class MiladyNFTDownloader:
 
             if response.status_code == 200:
                 data = response.json()
-                if 'nft' in data and 'metadata_url' in data['nft']:
-                    return data['nft']['metadata_url']
+                if "nft" in data and "metadata_url" in data["nft"]:
+                    return data["nft"]["metadata_url"]
 
         except Exception as e:
             print(f"⚠️  OpenSea API 失败 (token {token_id}): {e}")
@@ -96,7 +98,7 @@ class MiladyNFTDownloader:
 
                 # 保存 metadata
                 metadata_path = METADATA_DIR / f"milady_{token_id}.json"
-                with open(metadata_path, 'w') as f:
+                with open(metadata_path, "w") as f:
                     json.dump(metadata, f, indent=2)
 
                 print(f"✅ Metadata {token_id}: {metadata.get('name', 'Unknown')}")
@@ -130,7 +132,7 @@ class MiladyNFTDownloader:
             if response.status_code == 200:
                 # 保存图片
                 image_path = IMAGES_DIR / f"milady_{token_id}.png"
-                with open(image_path, 'wb') as f:
+                with open(image_path, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
 
@@ -159,8 +161,12 @@ class MiladyNFTDownloader:
 
             if response.status_code == 200:
                 data = response.json()
-                if 'nft' in data and 'owners' in data['nft'] and len(data['nft']['owners']) > 0:
-                    return data['nft']['owners'][0]['address']
+                if (
+                    "nft" in data
+                    and "owners" in data["nft"]
+                    and len(data["nft"]["owners"]) > 0
+                ):
+                    return data["nft"]["owners"][0]["address"]
 
         except Exception as e:
             print(f"⚠️  获取 owner 失败 (token {token_id}): {e}")
@@ -198,7 +204,7 @@ class MiladyNFTDownloader:
             metadata = {
                 "name": f"Milady #{token_id}",
                 "image": image_url,
-                "attributes": []
+                "attributes": [],
             }
 
         # 3. 获取 owner 地址（可选）
@@ -213,11 +219,13 @@ class MiladyNFTDownloader:
             "image_url": image_url,
             "contract": MILADY_CONTRACT,
             "local_image_path": str(IMAGES_DIR / f"milady_{token_id}.png"),
-            "local_metadata_path": str(METADATA_DIR / f"milady_{token_id}.json") if metadata else None
+            "local_metadata_path": (
+                str(METADATA_DIR / f"milady_{token_id}.json") if metadata else None
+            ),
         }
 
         info_path = OUTPUT_DIR / f"milady_{token_id}_info.json"
-        with open(info_path, 'w') as f:
+        with open(info_path, "w") as f:
             json.dump(info, f, indent=2)
 
         print(f"✅ 完成 Milady #{token_id}")
@@ -294,14 +302,16 @@ class MiladyNFTDownloader:
 
         for info_file in OUTPUT_DIR.glob("milady_*_info.json"):
             try:
-                with open(info_file, 'r') as f:
+                with open(info_file, "r") as f:
                     info = json.load(f)
-                    index.append({
-                        "token_id": info["token_id"],
-                        "name": info["name"],
-                        "owner": info.get("owner"),
-                        "image_path": info["local_image_path"]
-                    })
+                    index.append(
+                        {
+                            "token_id": info["token_id"],
+                            "name": info["name"],
+                            "owner": info.get("owner"),
+                            "image_path": info["local_image_path"],
+                        }
+                    )
             except:
                 pass
 
@@ -310,7 +320,7 @@ class MiladyNFTDownloader:
 
         # 保存索引
         index_path = OUTPUT_DIR / "milady_nfts_index.json"
-        with open(index_path, 'w') as f:
+        with open(index_path, "w") as f:
             json.dump(index, f, indent=2)
 
         print(f"\n📋 索引已创建: {index_path}")
@@ -321,7 +331,8 @@ def main():
     """主函数"""
     downloader = MiladyNFTDownloader()
 
-    print("""
+    print(
+        """
 ╔══════════════════════════════════════════════════════════╗
 ║       Milady NFT Collection Downloader                  ║
 ║       下载所有 10,000 个 Milady NFT 原图                 ║
@@ -329,7 +340,8 @@ def main():
 
 合约地址: 0x5Af0D9827E0c53E4799BB226655A1de152A425a5
 总数量: 10,000 NFTs
-    """)
+    """
+    )
 
     # 选择下载范围
     print("\n请选择下载选项：")
